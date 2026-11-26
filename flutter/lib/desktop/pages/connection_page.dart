@@ -121,8 +121,12 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
                         stateGlobal.svcStatus.value == SvcStatus.connecting
                     ? kColorWarn
                     : (stateGlobal.svcStatus.value == SvcStatus.ready
-                        ? Color.fromARGB(255, 50, 190, 166)
+                        ? MyTheme.verde
                         : Color.fromARGB(255, 224, 79, 95)),
+                boxShadow: stateGlobal.svcStatus.value == SvcStatus.ready &&
+                        !_svcStopped.value
+                    ? [BoxShadow(color: MyTheme.verde, blurRadius: 10)]
+                    : null,
               ),
             ).marginSymmetric(horizontal: em),
             Container(
@@ -378,10 +382,11 @@ class _ConnectionPageState extends State<ConnectionPage>
   Widget _buildRemoteIDTextField(BuildContext context) {
     var w = Container(
       width: 320 + 20 * 2,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 22),
+      padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
       decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(13)),
-          border: Border.all(color: Theme.of(context).colorScheme.background)),
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.all(Radius.circular(18)),
+          border: Border.all(color: Theme.of(context).dividerColor)),
       child: Ink(
         child: Column(
           children: [
@@ -452,9 +457,9 @@ class _ConnectionPageState extends State<ConnectionPage>
                           enableSuggestions: false,
                           keyboardType: TextInputType.visiblePassword,
                           focusNode: fieldFocusNode,
-                          style: const TextStyle(
-                            fontFamily: 'WorkSans',
-                            fontSize: 22,
+                          style: MyTheme.mono.copyWith(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w600,
                             height: 1.4,
                           ),
                           maxLines: 1,
@@ -552,7 +557,7 @@ class _ConnectionPageState extends State<ConnectionPage>
               padding: const EdgeInsets.only(top: 13.0),
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 SizedBox(
-                  height: 28.0,
+                  height: 36.0,
                   child: ElevatedButton(
                     onPressed: () {
                       onConnect();
@@ -562,11 +567,11 @@ class _ConnectionPageState extends State<ConnectionPage>
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  height: 28.0,
-                  width: 28.0,
+                  height: 36.0,
+                  width: 36.0,
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).dividerColor),
-                    borderRadius: BorderRadius.circular(8),
+                    shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: StatefulBuilder(

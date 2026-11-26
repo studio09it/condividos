@@ -174,21 +174,21 @@ class ColorThemeExtension extends ThemeExtension<ColorThemeExtension> {
     drag_indicator: Colors.grey[800],
     shadow: Colors.black,
     errorBannerBg: Color(0xFFFDEEEB),
-    me: Colors.green,
+    me: MyTheme.accent,
     toastBg: Colors.black.withOpacity(0.6),
     toastText: Colors.white,
     divider: Colors.black38,
   );
 
   static final dark = ColorThemeExtension(
-    border: Color(0xFF555555),
+    border: Color(0xFF2A2E39),
     border2: Color(0xFFE5E5E5),
     border3: Colors.white24,
-    highlight: Color(0xFF3F3F3F),
+    highlight: Color(0xFF1C1F29),
     drag_indicator: Colors.grey,
     shadow: Colors.grey,
     errorBannerBg: Color(0xFF470F2D),
-    me: Colors.greenAccent,
+    me: MyTheme.verde,
     toastBg: Colors.white.withOpacity(0.6),
     toastText: Colors.black,
     divider: Colors.white38,
@@ -248,10 +248,21 @@ class ColorThemeExtension extends ThemeExtension<ColorThemeExtension> {
 class MyTheme {
   MyTheme._();
 
-  static const Color grayBg = Color(0xFFEFEFF2);
-  static const Color accent = Color(0xFF00875A);
-  static const Color accent50 = Color(0x7700875A);
-  static const Color accent80 = Color(0xAA00875A);
+  // Palette del sito condividos.com (site/index.html :root)
+  static const Color verde = Color(0xFF00D34C);
+  static const Color nero = Color(0xFF06070B);
+  static const Color avorio = Color(0xFFF3F0EA);
+  static const Color pannelloScuro = Color(0xFF101218);
+  static const Color cardScura = Color(0xFF161922);
+  static const Color lineaScura = Color(0x17FFFFFF);
+  static const TextStyle mono = TextStyle(
+      fontFamily: 'Menlo',
+      fontFamilyFallback: ['SF Mono', 'Consolas', 'DejaVu Sans Mono', 'monospace']);
+
+  static const Color grayBg = Color(0xFFF3F4F1);
+  static const Color accent = Color(0xFF008E58);
+  static const Color accent50 = Color(0x77008E58);
+  static const Color accent80 = Color(0xAA008E58);
   static const Color canvasColor = Color(0xFF212121);
   static const Color border = Color(0xFFCCCCCC);
   static const Color idColor = accent;
@@ -396,12 +407,16 @@ class MyTheme {
             filled: true,
             isDense: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
           )
         : null,
     textTheme: const TextTheme(
-        titleLarge: TextStyle(fontSize: 19, color: Colors.black87),
+        titleLarge: TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+            color: Color(0xFF111418)),
         titleSmall: TextStyle(fontSize: 14, color: Colors.black87),
         bodySmall: TextStyle(fontSize: 12, color: Colors.black87, height: 1.25),
         bodyMedium:
@@ -430,18 +445,18 @@ class MyTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: MyTheme.accent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        shape: StadiumBorder(),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         backgroundColor: grayBg,
         foregroundColor: Colors.black87,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        side: BorderSide(color: Colors.black12),
+        shape: StadiumBorder(),
       ),
     ),
     switchTheme: switchTheme(),
@@ -460,7 +475,7 @@ class MyTheme {
               color: (isDesktop || isWebDesktop)
                   ? Color(0xFFECECEC)
                   : Colors.transparent),
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          borderRadius: BorderRadius.all(Radius.circular(12.0)),
         )),
   ).copyWith(
     extensions: <ThemeExtension<dynamic>>[
@@ -471,8 +486,8 @@ class MyTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: false,
     brightness: Brightness.dark,
-    hoverColor: Color.fromARGB(255, 45, 46, 53),
-    scaffoldBackgroundColor: Color(0xFF18191E),
+    hoverColor: Color(0xFF1C1F29),
+    scaffoldBackgroundColor: Color(0xFF0A0B10),
     dialogBackgroundColor: Color(0xFF18191E),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
@@ -483,33 +498,38 @@ class MyTheme {
         borderRadius: BorderRadius.circular(18.0),
         side: BorderSide(
           width: 1,
-          color: Color(0xFF24252B),
+          color: lineaScura,
         ),
       ),
     ),
     scrollbarTheme: scrollbarThemeDark,
     inputDecorationTheme: (isDesktop || isWebDesktop)
         ? InputDecorationTheme(
-            fillColor: Color(0xFF24252B),
+            fillColor: cardScura,
             filled: true,
             isDense: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
           )
         : null,
     textTheme: const TextTheme(
-      titleLarge: TextStyle(fontSize: 19),
-      titleSmall: TextStyle(fontSize: 14),
-      bodySmall: TextStyle(fontSize: 12, height: 1.25),
-      bodyMedium: TextStyle(fontSize: 14, height: 1.25),
+      titleLarge: TextStyle(
+          fontSize: 19,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
+          color: avorio),
+      titleSmall: TextStyle(fontSize: 14, color: avorio),
+      bodySmall: TextStyle(fontSize: 12, height: 1.35, color: Color(0xFFA5A3B0)),
+      bodyMedium: TextStyle(fontSize: 14, height: 1.25, color: avorio),
       labelLarge: TextStyle(
         fontSize: 16.0,
         fontWeight: FontWeight.bold,
-        color: accent80,
+        color: verde,
       ),
     ),
-    cardColor: Color(0xFF24252B),
+    dividerColor: lineaScura,
+    cardColor: cardScura,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     tabBarTheme: const TabBarTheme(
       labelColor: Colors.white70,
@@ -532,24 +552,22 @@ class MyTheme {
         : mobileTextButtonTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: MyTheme.accent,
-        foregroundColor: Colors.white,
+        backgroundColor: verde,
+        foregroundColor: nero,
+        elevation: 0,
+        padding: EdgeInsets.symmetric(horizontal: 20),
         disabledForegroundColor: Colors.white70,
         disabledBackgroundColor: Colors.white10,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        shape: StadiumBorder(),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        backgroundColor: Color(0xFF24252B),
-        side: BorderSide(color: Colors.white12, width: 0.5),
+        backgroundColor: Color(0x0AFFFFFF),
+        side: BorderSide(color: Color(0x29FFFFFF)),
         disabledForegroundColor: Colors.white70,
-        foregroundColor: Colors.white70,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        foregroundColor: avorio,
+        shape: StadiumBorder(),
       ),
     ),
     switchTheme: switchTheme(),
@@ -558,17 +576,19 @@ class MyTheme {
     listTileTheme: listTileTheme,
     menuBarTheme: MenuBarThemeData(
         style: MenuStyle(
-            backgroundColor: MaterialStatePropertyAll(Color(0xFF121212)))),
+            backgroundColor: MaterialStatePropertyAll(cardScura))),
     colorScheme: ColorScheme.dark(
-      primary: accent,
-      secondary: accent,
-      background: Color(0xFF24252B),
+      primary: verde,
+      secondary: verde,
+      onPrimary: nero,
+      background: pannelloScuro,
     ),
     popupMenuTheme: PopupMenuThemeData(
+        color: cardScura,
         shape: RoundedRectangleBorder(
-      side: BorderSide(color: Colors.white24),
-      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-    )),
+          side: BorderSide(color: Color(0x24FFFFFF)),
+          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+        )),
   ).copyWith(
     extensions: <ThemeExtension<dynamic>>[
       ColorThemeExtension.dark,
@@ -577,7 +597,8 @@ class MyTheme {
   );
 
   static ThemeMode getThemeModePreference() {
-    return themeModeFromString(bind.mainGetLocalOption(key: kCommConfKeyTheme));
+    final v = bind.mainGetLocalOption(key: kCommConfKeyTheme);
+    return themeModeFromString(v.isEmpty ? 'dark' : v);
   }
 
   static Future<void> changeDarkMode(ThemeMode mode) async {
@@ -3768,30 +3789,6 @@ Color? disabledTextColor(BuildContext context, bool enabled) {
   return enabled
       ? null
       : Theme.of(context).textTheme.titleLarge?.color?.withOpacity(0.6);
-}
-
-Widget loadPowered(BuildContext context) {
-  if (bind.mainGetBuildinOption(key: "hide-powered-by-me") == 'Y') {
-    return SizedBox.shrink();
-  }
-  return MouseRegion(
-    cursor: SystemMouseCursors.click,
-    child: GestureDetector(
-      onTap: () {
-        launchUrl(Uri.parse('https://condividos.com'));
-      },
-      child: Opacity(
-          opacity: 0.5,
-          child: Text(
-            translate("powered_by_me"),
-            overflow: TextOverflow.clip,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(fontSize: 9, decoration: TextDecoration.underline),
-          )),
-    ),
-  ).marginOnly(top: 6);
 }
 
 const _kDefaultLogoAsset = 'assets/logo.png';

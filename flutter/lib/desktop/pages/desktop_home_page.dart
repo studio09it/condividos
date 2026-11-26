@@ -80,18 +80,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final isOutgoingOnly = bind.isOutgoingOnly();
     final children = <Widget>[
       if (!isOutgoingOnly) buildPresetPasswordWarning(),
-      if (bind.isCustomClient())
-        Align(
-          alignment: Alignment.center,
-          child: loadPowered(context),
-        ),
       Align(
         alignment: Alignment.center,
         child: loadLogo(),
       ),
       buildTip(context),
-      if (!isOutgoingOnly) buildIDBoard(context),
-      if (!isOutgoingOnly) buildPasswordBoard(context),
+      if (!isOutgoingOnly) buildIDCard(context),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -129,7 +123,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     return ChangeNotifierProvider.value(
       value: gFFI.serverModel,
       child: Container(
-        width: isIncomingOnly ? 280.0 : 200.0,
+        width: isIncomingOnly ? 280.0 : 240.0,
         color: Theme.of(context).colorScheme.background,
         child: Stack(
           children: [
@@ -179,28 +173,71 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   }
 
   buildRightPane(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      decoration: BoxDecoration(
+        color: isDark ? null : Theme.of(context).scaffoldBackgroundColor,
+        gradient: isDark
+            // come #gl sul sito: verde all'11% che sfuma entro il 62%
+            ? RadialGradient(
+                center: Alignment(0.6, -0.7),
+                radius: 0.9,
+                colors: [
+                  Color.alphaBlend(MyTheme.verde.withOpacity(0.11),
+                      Theme.of(context).scaffoldBackgroundColor),
+                  Theme.of(context).scaffoldBackgroundColor,
+                ],
+                stops: [0, 0.62],
+              )
+            : null,
+      ),
       child: ConnectionPage(),
     );
   }
 
+  // Come la scheda "Il tuo ID / Password temporanea" del sito
+  Widget buildIDCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(14, 10, 14, 6),
+      padding: const EdgeInsets.only(top: 6),
+      decoration: BoxDecoration(
+        color: isDark ? MyTheme.cardScura : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: [
+          BoxShadow(
+              color: MyTheme.verde.withOpacity(isDark ? 0.07 : 0.05),
+              blurRadius: 32,
+              offset: Offset(0, 10)),
+        ],
+      ),
+      child: Column(children: [
+        buildIDBoard(context),
+        Divider(height: 1, indent: 16, endIndent: 16),
+        buildPasswordBoard(context),
+      ]),
+    );
+  }
+
+  static TextStyle _cardLabel(BuildContext context) => TextStyle(
+      fontSize: 10.5,
+      letterSpacing: 1.4,
+      fontWeight: FontWeight.w500,
+      color: Theme.of(context).textTheme.titleLarge?.color?.withOpacity(0.5));
+
   buildIDBoard(BuildContext context) {
     final model = gFFI.serverModel;
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 11),
-      height: 57,
+      margin: const EdgeInsets.only(left: 16, right: 8),
+      height: 62,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          Container(
-            width: 2,
-            decoration: const BoxDecoration(color: MyTheme.accent),
-          ).marginOnly(top: 5),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 7),
+              padding: EdgeInsets.zero,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -211,15 +248,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          translate("ID"),
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.color
-                                  ?.withOpacity(0.5)),
-                        ).marginOnly(top: 5),
+                          translate("ID").toUpperCase(),
+                          style: _cardLabel(context),
+                        ).marginOnly(top: 8),
                         buildPopupMenu(context)
                       ],
                     ),
@@ -236,10 +267,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                         readOnly: true,
                         decoration: InputDecoration(
                           border: InputBorder.none,
+                          filled: false,
                           contentPadding: EdgeInsets.only(top: 10, bottom: 10),
                         ),
-                        style: TextStyle(
-                          fontSize: 22,
+                        style: MyTheme.mono.copyWith(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w600,
                         ),
                       ).workaroundFreezeLinuxMint(),
                     ),
@@ -263,9 +296,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         child: Obx(
           () => CircleAvatar(
             radius: 15,
-            backgroundColor: hover.value
-                ? Theme.of(context).scaffoldBackgroundColor
-                : Theme.of(context).colorScheme.background,
+            backgroundColor:
+                hover.value ? Theme.of(context).hoverColor : Colors.transparent,
             child: Icon(
               Icons.more_vert_outlined,
               size: 20,
@@ -295,26 +327,20 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final showOneTime = model.approveMode != 'click' &&
         model.verificationMethod != kUsePermanentPassword;
     return Container(
-      margin: EdgeInsets.only(left: 20.0, right: 16, top: 13, bottom: 13),
+      margin: EdgeInsets.only(left: 16.0, right: 8, top: 12, bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          Container(
-            width: 2,
-            height: 52,
-            decoration: BoxDecoration(color: MyTheme.accent),
-          ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 7),
+              padding: EdgeInsets.zero,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AutoSizeText(
-                    translate("One-time Password"),
-                    style: TextStyle(
-                        fontSize: 14, color: textColor?.withOpacity(0.5)),
+                    translate("One-time Password").toUpperCase(),
+                    style: _cardLabel(context),
                     maxLines: 1,
                   ),
                   Row(
@@ -333,10 +359,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                             readOnly: true,
                             decoration: InputDecoration(
                               border: InputBorder.none,
+                              filled: false,
                               contentPadding:
                                   EdgeInsets.only(top: 14, bottom: 10),
                             ),
-                            style: TextStyle(fontSize: 15),
+                            style: MyTheme.mono.copyWith(
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ).workaroundFreezeLinuxMint(),
                         ),
                       ),
@@ -351,7 +379,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                                   Icons.refresh,
                                   color: refreshHover.value
                                       ? textColor
-                                      : Color(0xFFDDDDDD),
+                                      : textColor?.withOpacity(0.35),
                                   size: 22,
                                 ))),
                           ),
@@ -366,7 +394,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                                 Icons.edit,
                                 color: editHover.value
                                     ? textColor
-                                    : Color(0xFFDDDDDD),
+                                    : textColor?.withOpacity(0.35),
                                 size: 22,
                               ).marginOnly(right: 8, top: 4),
                             ),
