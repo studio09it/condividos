@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Aggiungi alla rubrica"),
         ("Group", "Gruppo"),
         ("Search", "Cerca"),
-        ("Closed manually by web console", "Chiudi manualmente dalla console web"),
+        ("Closed manually by web console", "Hai finito i minuti gratuiti di oggi. Passa a Pro su condividos.com per usare CondividOS senza limiti."),  // CondividOS: chiusa da conti, fine minuti Free
         ("Local keyboard type", "Tipo tastiera locale"),
         ("Select local keyboard type", "Seleziona il tipo di tastiera locale"),
         ("software_render_tip", "Se nel computer con Linux è presente una scheda grafica Nvidia e la finestra remota si chiude immediatamente dopo la connessione, installa il nuovo driver open source e usa il rendering software.\nPotrebbe essere necessario un riavvio del programma."),

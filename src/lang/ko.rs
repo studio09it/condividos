@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "주소록에 추가"),
         ("Group", "그룹"),
         ("Search", "검색"),
-        ("Closed manually by web console", "웹 콘솔에 의해 수동으로 닫힘"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "로컬 키보드 유형"),
         ("Select local keyboard type", "로컬 키보드 유형 선택"),
         ("software_render_tip", "Linux에서 Nvidia 그래픽 카드를 사용 중인데 원격 창이 연결 즉시 닫히는 경우 오픈 소스 Nouveau 드라이버로 전환하고 소프트웨어 렌더링을 사용하기로 선택하는 것이 도움이 될 수 있습니다. 소프트웨어를 재시작해야 합니다."),

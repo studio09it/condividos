@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Aldoni al adresaro"),
         ("Group", "Grupo"),
         ("Search", "Serĉi"),
-        ("Closed manually by web console", "Fermita permane de la reta konzolo"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Tipo de loka klavaro"),
         ("Select local keyboard type", "Elekti tipon de loka klavaro"),
         ("software_render_tip", "Se vi uzas Nvidia-grafikkarton sub Linukso kaj la fora fenestro fermiĝas tuj post konektado, ŝanĝo al la malfermkoda Nouveau-pelilo kaj elekto de programara bildigo eble helpos. Programara restarto estas necesa."),

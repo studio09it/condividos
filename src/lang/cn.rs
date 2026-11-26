@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "添加到地址簿"),
         ("Group", "小组"),
         ("Search", "搜索"),
-        ("Closed manually by web console", "被 web 控制台手动关闭"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "本地键盘类型"),
         ("Select local keyboard type", "请选择本地键盘类型"),
         ("software_render_tip", "如果你使用英伟达显卡, 并且远程窗口在会话建立后会立刻关闭, 那么安装 nouveau 驱动并且选择使用软件渲染可能会有帮助。重启软件后生效。"),

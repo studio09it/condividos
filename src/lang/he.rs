@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "הוסף לספר הכתובות"),
         ("Group", "קבוצה"),
         ("Search", "חפש"),
-        ("Closed manually by web console", "נסגר ידנית דרך מסוף האינטרנט"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "סוג מקלדת מקומי"),
         ("Select local keyboard type", "בחר סוג מקלדת מקומי"),
         ("software_render_tip", "אם אתה משתמש בכרטיס גרפיקה של Nvidia תחת Linux וחלון המרוחק נסגר מיד לאחר החיבור, החלפה למנהל ההתקן הפתוח Nouveau ובחירה בשימוש בעיבוד תוכנה עשויה לעזור. נדרשת הפעלה מחדש של התוכנה."),

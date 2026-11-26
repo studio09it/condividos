@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Afegeix a la llibreta d'adreces"),
         ("Group", "Grup"),
         ("Search", "Cerca"),
-        ("Closed manually by web console", "Tancat manualment per la consola web"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Tipus de teclat local"),
         ("Select local keyboard type", "Seleccioneu el tipus de teclat local"),
         ("software_render_tip", "Si utilitzeu una gràfica Nvidia a Linux i la connexió remota es tanca immediatament en connectar, canviar al controlador lliure «Nouveau» amb renderització per programari, pot ajudar a solucionar el problema. Es requerirà en aquest cas reiniciar l'aplicació."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Adicionar à lista de endereços"),
         ("Group", "Grupo"),
         ("Search", "Buscar"),
-        ("Closed manually by web console", "Fechado manualmente pelo console da web"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Tipo de teclado local"),
         ("Select local keyboard type", "Selecione o tipo de teclado local"),
         ("software_render_tip", "Se você tiver uma placa gráfica Nvidia e a janela remota fechar imediatamente após a conexão, instalar o driver nouveau e optar por usar a renderização de software pode ajudar. É necessário reiniciar o software."),

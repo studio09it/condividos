@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "მისამართების წიგნში დამატება"),
         ("Group", "ჯგუფი"),
         ("Search", "ძიება"),
-        ("Closed manually by web console", "ხელით დაიხურა ვებ-კონსოლის საშუალებით"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "ლოკალური კლავიატურის ტიპი"),
         ("Select local keyboard type", "აირჩიეთ ლოკალური კლავიატურის ტიპი"),
         ("software_render_tip", "თუ გაქვთ Nvidia ვიდეობარათი და დისტანციური ფანჯარა იხურება დაკავშირებისთანავე, შეიძლება დაგეხმაროთ Nouveau დრაივერის დაყენება და პროგრამული ვიზუალიზაციის არჩევა. საჭირო იქნება გადატვირთვა."),

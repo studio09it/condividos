@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Дадаць у адрасную кнігу"),
         ("Group", "Група"),
         ("Search", "Пошук"),
-        ("Closed manually by web console", "Закрыта ўручную праз вэб-кансоль"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Тып лакальнай клавіятуры"),
         ("Select local keyboard type", "Выберыце тып лакальнай клавіятуры"),
         ("software_render_tip", "Калі ў вас ёсць відэакарта Nvidia і аддаленае акно закрываецца адразу пасля падключэння, магчыма, дапаможа ўсталяванне драйвера Nouveau і выбар выкарыстання праграмнай візуалізацыі. Патрабуецца перазагрузка."),

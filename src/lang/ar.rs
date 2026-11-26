@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "اضافة الى كتاب العناوين"),
         ("Group", "مجموعة"),
         ("Search", "بحث"),
-        ("Closed manually by web console", "اغلق يدويا عبر طرفية الويب"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "توع لوحة المفاتيح المحلية"),
         ("Select local keyboard type", "اختر نوع لوحة المفاتيح الملحية"),
         ("software_render_tip", "اذا كنت تستخدم بطاقة رسوميات Nvidia تحت لينكس والشاشة البعيد تغلق مباشرة بعد الاتصال, قم بالتبديل الى تعريفات Nouveau مفتوحة المصدر واختيار الترميز البرمجي قد يساعد. اعادة تشغيل البرناج مطلوبة."),

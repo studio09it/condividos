@@ -2,6 +2,7 @@ lazy_static::lazy_static! {
 pub static ref T: std::collections::HashMap<&'static str, &'static str> =
     [
         ("desk_tip", "Your desktop can be accessed with this ID and password."),
+        ("Closed manually by web console", "You have used up today's free minutes. Upgrade to Pro at condividos.com to use CondividOS without limits."),  // CondividOS: chiusa da conti, fine minuti Free
         ("connecting_status", "Connecting to the RustDesk network..."),
         ("not_ready_status", "Not ready. Please check your connection"),
         ("ID/Relay Server", "ID/Relay server"),

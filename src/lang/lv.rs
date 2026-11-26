@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Pievienot adrešu grāmatai"),
         ("Group", "Grupa"),
         ("Search", "Meklēt"),
-        ("Closed manually by web console", "Manuāli aizvērta tīmekļa konsole"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Vietējais tastatūras veids"),
         ("Select local keyboard type", "Izvēlēties vietējās tastatūras veidu"),
         ("software_render_tip", "Ja izmantojat Nvidia grafikas karti operētājsistēmā Linux un attālais logs tiek aizvērts uzreiz pēc savienojuma izveides, var palīdzēt pārslēgšanās uz atvērtā koda Nouveau draiveri un izvēle izmantot programmatūras renderēšanu. Nepieciešama programmatūras restartēšana."),

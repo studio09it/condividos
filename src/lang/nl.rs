@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Toevoegen aan Adresboek"),
         ("Group", "Groep"),
         ("Search", "Zoeken"),
-        ("Closed manually by web console", "Handmatig gesloten door webconsole"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Lokaal toetsenbord"),
         ("Select local keyboard type", "Lokaal toetsenbord selecteren"),
         ("software_render_tip", "Als u een NVIDIA grafische kaart hebt en het externe venster sluit onmiddellijk na verbinding, kan het helpen om het nieuwe stuurprogramma te installeren en te kiezen voor software rendering. Een software herstart is vereist."),

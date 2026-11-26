@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "એડ્રેસ બુકમાં ઉમેરો"),
         ("Group", "ગ્રુપ"),
         ("Search", "શોધો"),
-        ("Closed manually by web console", "વેબ કન્સોલ દ્વારા મેન્યુઅલી બંધ કરવામાં આવ્યું"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "લોકલ કીબોર્ડ પ્રકાર"),
         ("Select local keyboard type", "લોકલ કીબોર્ડ પ્રકાર પસંદ કરો"),
         ("software_render_tip", "જો સ્ક્રીન કાળી દેખાય, તો આ અજમાવો"),

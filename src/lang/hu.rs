@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Hozzáadás a címjegyzékhez"),
         ("Group", "Csoport"),
         ("Search", "Keresés"),
-        ("Closed manually by web console", "Saját kezűleg bezárva a webkonzolon keresztül"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Helyi billentyűzet típusa"),
         ("Select local keyboard type", "Helyi billentyűzet típusának kiválasztása"),
         ("software_render_tip", "Ha Nvidia grafikus kártyát használ Linux alatt, és a távoli ablak a kapcsolat létrehozása után azonnal bezáródik, akkor a Nouveau nyílt forráskódú illesztőprogramra való váltás és a szoftveres leképezés alkalmazása segíthet. A szoftvert újra kell indítani."),

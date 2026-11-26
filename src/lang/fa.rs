@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "افزودن به دفترچه آدرس"),
         ("Group", "گروه"),
         ("Search", "جستجو"),
-        ("Closed manually by web console", "به‌صورت دستی توسط کنسول وب بسته شد"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "نوع صفحه‌کلید محلی"),
         ("Select local keyboard type", "نوع صفحه‌کلید محلی را انتخاب کنید"),
         ("software_render_tip", "اگر کارت گرافیک Nvidia دارید و پنجره راه دور بلافاصله پس از اتصال بسته می‌شود، تغییر به درایور nouveau و انتخاب گزینه استفاده از رندر نرم‌افزاری می‌تواند کمک‌کننده باشد. راه‌اندازی مجدد نرم‌افزار مورد نیاز است."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "เพิ่มไปยังสมุดรายชื่อ"),
         ("Group", "กลุ่ม"),
         ("Search", "ค้นหา"),
-        ("Closed manually by web console", "ถูกปิดโดยเว็บคอนโซล"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "ประเภทคีย์บอร์ด"),
         ("Select local keyboard type", "เลือกประเภทคีย์บอร์ด"),
         ("software_render_tip", "ถ้าคุณใช้กราฟิกการ์ดกับระบบ Linux และหน้าต่างของเครื่องปลายทางปิดในทันทีหลังจากการเชื่อมต่อ การเปลี่ยนไปใช้ไดรเวอร์ Nouveau และเลือกใช้โหมดการเรนเดอร์แบบซอฟท์แวร์อาจช่วยได้ (ต้องรีสตาร์ทโปรแกรม)"),

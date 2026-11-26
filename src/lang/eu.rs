@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Gehitu helbide-liburura"),
         ("Group", "Taldea"),
         ("Search", "Bilatu"),
-        ("Closed manually by web console", "Web kontsolarengatik eskuz itxita"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Teklatu mota lokala"),
         ("Select local keyboard type", "Hautatu teklatu mota lokala"),
         ("software_render_tip", "Nvidia bideo-txartela baduzu eta urruneko leihoa berehala ixten bada, nouveau driver-a instalatzea eta software errenderizazioa hautatzea lagundu dezake. Aplikazioa berrabiarazi behar da."),

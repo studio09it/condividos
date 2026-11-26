@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Ajouter au carnet d’adresses"),
         ("Group", "Groupe"),
         ("Search", "Rechercher"),
-        ("Closed manually by web console", "Terminée manuellement par la console web"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Disposition du clavier local"),
         ("Select local keyboard type", "Sélectionner la disposition du clavier local"),
         ("software_render_tip", "Si vous utilisez une carte graphique Nvidia sous Linux et que la fenêtre distante se ferme immédiatement après la connexion, l’installation du pilote open-source Nouveau et l’utilisation du rendu du logiciel peuvent aider. Un redémarrage du logiciel est requis."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Legg til adresseboken"),
         ("Group", "Gruppe"),
         ("Search", "Søk"),
-        ("Closed manually by web console", "Lukket ned manuelt av webkonsollet"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Lokal tastatur type"),
         ("Select local keyboard type", "velg lokal tastatur type"),
         ("software_render_tip", "Hvis du bruker Nvidia-grafikkort under Linux og fjernvinduet lukkes umiddelbart etter tilkobling, kan det hjelpe å bytte til den åpne kildekode-driveren Nouveau og velge programvarebasert gjengivelse. En omstart av programvaren kreves."),

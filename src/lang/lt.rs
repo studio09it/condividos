@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Pridėti prie adresų knygos"),
         ("Group", "Grupė"),
         ("Search", "Paieška"),
-        ("Closed manually by web console", "Uždaryta rankiniu būdu naudojant žiniatinklio konsolę"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Vietinės klaviatūros tipas"),
         ("Select local keyboard type", "Pasirinkite vietinės klaviatūros tipą"),
         ("software_render_tip", "Jei turite Nvidia vaizdo plokštę ir nuotolinis langas iškart užsidaro prisijungus, gali padėti „Nouveau“ tvarkyklės įdiegimas ir programinės įrangos atvaizdavimo pasirinkimas. Būtina paleisti iš naujo."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Ünvan kitabına əlavə et"),
         ("Group", "Qrup"),
         ("Search", "Axtarış"),
-        ("Closed manually by web console", "Veb konsoldan əl ilə bağlandı"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Lokal klaviatura növü"),
         ("Select local keyboard type", "Lokal klaviatura növünü seçin"),
         ("software_render_tip", "Linux-da Nvidia video kartından istifadə edirsinizsə və qoşulduqdan dərhal sonra uzaq pəncərə bağlanırsa, açıq mənbəli Nouveau sürücüsünə keçmək və proqram təminatı ilə render seçmək kömək edə bilər. Proqramın yenidən başladılması tələb olunur."),

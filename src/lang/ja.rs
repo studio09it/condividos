@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "アドレス帳に追加"),
         ("Group", "グループ"),
         ("Search", "検索"),
-        ("Closed manually by web console", "Web コンソールによって閉じられました"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "キーボードのタイプ"),
         ("Select local keyboard type", "キーボードのタイプを選択"),
         ("software_render_tip", "Linux で NVIDIA 製のグラフィックカードを使用していると、接続後すぐにリモートウィンドウが閉じてしまう場合があります。オープンソースの Nouveau ドライバーに切り替えて、ソフトウェアレンダリングを使用するよう設定すると解決するかもしれません。(RustDesk の再起動が必要です)"),

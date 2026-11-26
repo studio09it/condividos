@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "پتہ کتاب میں شامل کریں"),
         ("Group", "گروپ"),
         ("Search", "تلاش"),
-        ("Closed manually by web console", "ویب کنسول کے ذریعے دستی طور پر بند کیا گیا"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "مقامی کیبورڈ کا قسم"),
         ("Select local keyboard type", "مقامی کیبورڈ کا قسم منتخب کریں"),
         ("software_render_tip", "اگر آپ Linux پر Nvidia گرافکس کارڈ استعمال کر رہے ہیں اور منسلک ہونے کے فوراً بعد ریموٹ ونڈو بند ہو جاتی ہے، تو اوپن سورس Nouveau ڈرائیور پر منتقل ہونا اور سافٹ ویئر رینڈرنگ کا انتخاب مددگار ہو سکتا ہے۔ سافٹ ویئر کو دوبارہ شروع کرنا ضروری ہے۔"),

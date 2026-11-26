@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Adaugă la agendă"),
         ("Group", "Grup"),
         ("Search", "Caută"),
-        ("Closed manually by web console", "Conexiune închisă manual de consola web"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Tastatură locală"),
         ("Select local keyboard type", "Selectează tastatura locală"),
         ("software_render_tip", "Dacă ai o placă video Nvidia și folosești Linux, iar fereastra cu conexiunea la distanță se închide imediat după conectare, îți sugerăm să instalezi driverul gratuit Nouveau și să folosești randarea de software. Este necesară repornirea."),

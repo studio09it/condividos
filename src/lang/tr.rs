@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Adres Defterine Ekle"),
         ("Group", "Grup"),
         ("Search", "Ara"),
-        ("Closed manually by web console", "Web konsoluyla manuel olarak kapatıldı"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Yerel klavye türü"),
         ("Select local keyboard type", "Yerel klavye türünü seçin"),
         ("software_render_tip", "Linux altında Nvidia grafik kartı kullanıyorsanız ve uzak pencere bağlandıktan hemen sonra kapanıyorsa, açık kaynaklı Nouveau sürücüsüne geçmeyi ve yazılım renderleme seçeneğini seçmeyi deneyin. Yazılımı yeniden başlatmanız gerekebilir."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Annanghe a sa rubrica"),
         ("Group", "Grupu"),
         ("Search", "Chirca"),
-        ("Closed manually by web console", "Serra in manera manuale dae sa console web"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Casta de tecladu locale"),
         ("Select local keyboard type", "Seletziona sa casta de tecladu locale"),
         ("software_render_tip", "Si in s'elaboradore cun Linux b'at un'ischeda grafica Nvidia e sa ventana remota si serrat deretu a pustis de sa connessione, installa su driver nou a còdighe abertu e imprea sa renderitzatzione tràmite programma (software).\nDiat pòdere bisongiare a torrare a allùghere su programma."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "新增到通訊錄"),
         ("Group", "群組"),
         ("Search", "搜尋"),
-        ("Closed manually by web console", "被 Web 控制台手動關閉"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "本機鍵盤類型"),
         ("Select local keyboard type", "請選擇本機鍵盤類型"),
         ("software_render_tip", "如果您使用 Nvidia 顯示卡，並且遠端視窗在建立連線後會立刻關閉，那麼請安裝 nouveau 顯示卡驅動程式並且選擇使用軟體繪製可能會有幫助。重新啟動軟體後生效。"),

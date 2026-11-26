@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Tambahkan ke Buku Alamat"),
         ("Group", "Grup"),
         ("Search", "Pencarian"),
-        ("Closed manually by web console", "Ditutup secara manual dari konsol web."),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Tipe papan ketik"),
         ("Select local keyboard type", "Pilih tipe papan ketik"),
         ("software_render_tip", "Jika Anda menggunakan kartu grafis Nvidia pada sistem linux dan jendela windows ditutup secara instan setelah terhubung, silakan ubah ke driver open-source Nouveau, dibutuhkan untuk merestart aplikasi"),

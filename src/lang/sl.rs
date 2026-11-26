@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Dodaj v adresar"),
         ("Group", "Skupina"),
         ("Search", "Iskanje"),
-        ("Closed manually by web console", "Ročno zaprto iz spletne konzole"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Lokalna vrsta tipkovnice"),
         ("Select local keyboard type", "Izberite lokalno vrsto tipkovnice"),
         ("software_render_tip", "Če na Linuxu uporabljate Nvidino grafično kartico in se oddaljeno okno zapre takoj po vzpostavitvi povezave, lahko pomaga preklop na odprtokodni gonilnik Nouveau in uporaba programskega upodabljanja. Potreben je ponovni zagon programa."),

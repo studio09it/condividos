@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Thêm vào sổ địa chỉ"),
         ("Group", "Nhóm"),
         ("Search", "Tìm kiếm"),
-        ("Closed manually by web console", "Đã đóng bởi Web Console"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Loại bàn phím cục bộ"),
         ("Select local keyboard type", "Chọn loại bàn phím cục bộ"),
         ("software_render_tip", "Nếu gặp lỗi hiển thị trên Linux với Nvidia, hãy thử phần mềm render."),

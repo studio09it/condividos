@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Lisa aadressiraamatusse"),
         ("Group", "Grupeeri"),
         ("Search", "Otsi"),
-        ("Closed manually by web console", "Veebikonsooli kaudu käsitsi suletud"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Kohalik klaviatuuritüüp"),
         ("Select local keyboard type", "Vali kohalik klaviatuuritüüp"),
         ("software_render_tip", "Kui kasutad Linuxis Nvidia graafikakaarti ja kaugaken sulgub kohe pärast ühendamist, võib aidata üleminek avatud lähtekoodiga Nouveau draiverile ja valida tarkvaraline renderdamise. Vajalik on tarkvara taaskäivitamine."),

@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Προσθήκη στο βιβλίο διευθύνσεων"),
         ("Group", "Ομάδα"),
         ("Search", "Αναζήτηση"),
-        ("Closed manually by web console", "Κλείσιμο χειροκίνητα από την κονσόλα ιστού"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Τύπος τοπικού πληκτρολογίου"),
         ("Select local keyboard type", "Επιλογή τύπου τοπικού πληκτρολογίου"),
         ("software_render_tip", "Εάν χρησιμοποιείτε κάρτα γραφικών της Nvidia σε Linux και το παράθυρο απομακρυσμένης πρόσβασης κλείνει αμέσως μετά τη σύνδεση, η μετάβαση στο πρόγραμμα οδήγησης της Nouveau ανοιχτού κώδικα και η επιλογή χρήσης απόδοσης λογισμικού μπορεί να βοηθήσει. Απαιτείται επανεκκίνηση του λογισμικού."),

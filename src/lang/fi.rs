@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Lisää osoitekirjaan"),
         ("Group", "Ryhmä"),
         ("Search", "Haku"),
-        ("Closed manually by web console", "Suljettu manuaalisesti verkkokonsolista"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Paikallinen näppäimistötyyppi"),
         ("Select local keyboard type", "Valitse paikallinen näppäimistötyyppi"),
         ("software_render_tip", "Jos laitteistokiihdytys ei toimi oikein, voit käyttää ohjelmistopohjaista renderöintiä."),

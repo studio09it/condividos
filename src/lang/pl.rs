@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Dodaj do Książki Adresowej"),
         ("Group", "Grupy"),
         ("Search", "Szukaj"),
-        ("Closed manually by web console", "Zakończone ręcznie z poziomu konsoli webowej"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Lokalny typ klawiatury"),
         ("Select local keyboard type", "Wybierz lokalny typ klawiatury"),
         ("software_render_tip", "Jeżeli posiadasz kartę graficzną Nvidia i okno zamyka się natychmiast po nawiązaniu połączenia, instalacja sterownika nouveau i wybór renderowania programowego mogą pomóc. Restart aplikacji jest wymagany."),

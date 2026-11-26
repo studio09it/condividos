@@ -402,7 +402,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Add to address book", "Přidat do adresáře"),
         ("Group", "Skupina"),
         ("Search", "Vyhledávání"),
-        ("Closed manually by web console", "Uzavřeno ručně pomocí webové konzole"),
+        ("Closed manually by web console", ""),
         ("Local keyboard type", "Typ místní klávesnice"),
         ("Select local keyboard type", "Výběr typu místní klávesnice"),
         ("software_render_tip", "Pokud používáte grafickou kartu Nvidia v systému Linux a vzdálené okno se po připojení ihned zavře, může vám pomoci přepnutí na open-source ovladač Nouveau a volba softwarového vykreslování. Je nutný restart softwaru."),
