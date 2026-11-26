@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=RustDesk
+Name=CondividOS
 NoDisplay=true
 MimeType=x-scheme-handler/rustdesk;
 TryExec=rustdesk
