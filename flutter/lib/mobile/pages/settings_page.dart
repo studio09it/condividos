@@ -1100,7 +1100,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             // AGPL: crediti originali e link al sorgente, come nella schermata Info del desktop
             SettingsTile(
               title: Text('© STUDIO 09 S.R.L. — Based on RustDesk © Purslane Tech Pte. Ltd.'),
-              value: Text('Source: https://github.com/studio09it/condividos'),
+              description: Text('Source: https://github.com/studio09it/condividos'),
               onPressed: (context) =>
                   launchUrlString('https://github.com/studio09it/condividos'),
               leading: Icon(Icons.code),
