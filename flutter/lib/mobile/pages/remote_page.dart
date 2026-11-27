@@ -602,6 +602,41 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
     );
   }
 
+  // CondividOS: numeri degli schermi direttamente nella barra, stesse regole di showOptions
+  List<Widget> _displayButtons() {
+    final pi = gFFI.ffiModel.pi;
+    final privacyMode = PrivacyModeState.find(widget.id).value;
+    if (pi.displays.length < 2 ||
+        pi.currentDisplay == kAllDisplayValue ||
+        (privacyMode.isNotEmpty &&
+            !allowDisplaySwitchInPrivacyMode(pi, privacyMode))) {
+      return [];
+    }
+    return List.generate(pi.displays.length, (i) {
+      final cur = i == pi.currentDisplay;
+      return InkWell(
+        onTap: cur ? null : () => openMonitorInTheSameTab(i, gFFI, pi),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 9),
+          child: Container(
+            width: 30,
+            height: 30,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: cur ? Colors.white : null,
+              border: Border.all(color: Colors.white),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text('${i + 1}',
+                style: TextStyle(
+                    color: cur ? MyTheme.accent : Colors.white,
+                    fontWeight: FontWeight.bold)),
+          ),
+        ),
+      );
+    });
+  }
+
   Widget getBottomAppBar() {
     final ffiModel = Provider.of<FfiModel>(context);
     return BottomAppBar(
@@ -611,7 +646,12 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
+          // CondividOS: rimpicciolisce i pulsanti se con gli schermi non ci stanno
+          Flexible(
+              child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Row(
               children: <Widget>[
                     IconButton(
                       color: Colors.white,
@@ -629,6 +669,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
                       },
                     )
                   ] +
+                  _displayButtons() +
                   (isWebDesktop || ffiModel.viewOnly || !ffiModel.keyboard
                       ? []
                       : gFFI.ffiModel.isPeerAndroid
@@ -686,7 +727,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
                         showActions(widget.id);
                       },
                     ),
-                  ]),
+                  ]))),
           Obx(() => IconButton(
                 color: Colors.white,
                 icon: Icon(Icons.expand_more),

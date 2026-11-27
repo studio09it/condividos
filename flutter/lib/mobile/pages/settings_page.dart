@@ -1097,12 +1097,11 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   launchUrlString('https://condividos.com/privacy.html'),
               leading: Icon(Icons.privacy_tip),
             ),
-            // AGPL: crediti originali e link al sorgente, come nella schermata Info del desktop
+            // AGPL: crediti originali; licenza e link al sorgente sono nella pagina del sito
             SettingsTile(
               title: Text('© STUDIO 09 S.R.L. — Based on RustDesk © Purslane Tech Pte. Ltd.'),
-              description: Text('Source: https://github.com/studio09it/condividos'),
               onPressed: (context) =>
-                  launchUrlString('https://github.com/studio09it/condividos'),
+                  launchUrlString('https://condividos.com/condizioni.html#software'),
               leading: Icon(Icons.code),
             )
           ],
