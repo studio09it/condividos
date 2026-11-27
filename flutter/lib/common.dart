@@ -255,6 +255,9 @@ class MyTheme {
   static const Color pannelloScuro = Color(0xFF101218);
   static const Color cardScura = Color(0xFF161922);
   static const Color lineaScura = Color(0x17FFFFFF);
+  static const Color grigioScuro = Color(0xFFA5A3B0); // testo secondario su scuro: 7,6:1 su pannelloScuro
+  // Verde per testo e pulsanti nel tema chiaro: #00D34C su bianco fa 2:1, questo 5,4:1
+  static const Color verdeTesto = Color(0xFF007A4C);
   static const TextStyle mono = TextStyle(
       fontFamily: 'Menlo',
       fontFamilyFallback: ['SF Mono', 'Consolas', 'DejaVu Sans Mono', 'monospace']);
@@ -267,9 +270,9 @@ class MyTheme {
   static const Color border = Color(0xFFCCCCCC);
   static const Color idColor = accent;
   static const Color darkGray = Color.fromARGB(255, 148, 148, 148);
-  static const Color cmIdColor = Color(0xFF21790B);
+  static const Color cmIdColor = accent; // un verde solo: erano #21790B e #00A35F
   static const Color dark = Colors.black87;
-  static const Color button = Color(0xFF00A35F);
+  static const Color button = accent;
   static const Color hoverBorder = Color(0xFF999999);
 
   // ListTile
@@ -384,6 +387,7 @@ class MyTheme {
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
     useMaterial3: false,
     brightness: Brightness.light,
+    primaryColor: verdeTesto,
     hoverColor: Color.fromARGB(255, 224, 224, 224),
     scaffoldBackgroundColor: Colors.white,
     dialogBackgroundColor: Colors.white,
@@ -444,7 +448,7 @@ class MyTheme {
         : mobileTextButtonTheme,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: MyTheme.accent,
+        backgroundColor: verdeTesto,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -467,7 +471,7 @@ class MyTheme {
         style:
             MenuStyle(backgroundColor: MaterialStatePropertyAll(Colors.white))),
     colorScheme: ColorScheme.light(
-        primary: accent, secondary: accent, background: grayBg),
+        primary: verdeTesto, secondary: verdeTesto, background: grayBg),
     popupMenuTheme: PopupMenuThemeData(
         color: Colors.white,
         shape: RoundedRectangleBorder(
@@ -486,8 +490,9 @@ class MyTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: false,
     brightness: Brightness.dark,
+    primaryColor: verde,
     hoverColor: Color(0xFF1C1F29),
-    scaffoldBackgroundColor: Color(0xFF0A0B10),
+    scaffoldBackgroundColor: nero,
     dialogBackgroundColor: Color(0xFF18191E),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,

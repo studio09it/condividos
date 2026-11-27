@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_hbb/mobile/pages/server_page.dart';
 import 'package:flutter_hbb/mobile/pages/settings_page.dart';
 import 'package:flutter_hbb/web/settings_page.dart';
@@ -61,6 +62,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return WillPopScope(
         onWillPop: () async {
           if (_selectedIndex != 0) {
@@ -78,8 +80,18 @@ class HomePageState extends State<HomePage> {
             centerTitle: true,
             title: appTitle(),
             actions: _pages.elementAt(_selectedIndex).appBarActions,
+            // Barre come il sito, con un filo: prima #121212 su scuro e verde pieno
+            // su chiaro, dove il simbolo del marchio non si leggeva
+            backgroundColor: isDark ? MyTheme.pannelloScuro : Colors.white,
+            foregroundColor: isDark ? null : MyTheme.nero,
+            shape: Border(
+                bottom: BorderSide(color: Theme.of(context).dividerColor)),
           ),
-          bottomNavigationBar: BottomNavigationBar(
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(color: Theme.of(context).dividerColor))),
+            child: BottomNavigationBar(
             key: navigationBarKey,
             items: _pages
                 .map((page) =>
@@ -87,8 +99,11 @@ class HomePageState extends State<HomePage> {
                 .toList(),
             currentIndex: _selectedIndex,
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: MyTheme.accent, //
-            unselectedItemColor: MyTheme.darkGray,
+            backgroundColor: isDark ? MyTheme.pannelloScuro : null,
+            // La voce selezionata si legge meglio delle altre (prima 3,2:1 contro 4,4:1)
+            selectedItemColor: Theme.of(context).colorScheme.primary,
+            unselectedItemColor:
+                isDark ? MyTheme.grigioScuro : MyTheme.darkGray,
             onTap: (index) => setState(() {
               // close chat overlay when go chat page
               if (_selectedIndex != index) {
@@ -101,7 +116,7 @@ class HomePageState extends State<HomePage> {
                 }
               }
             }),
-          ),
+          )),
           body: _pages.elementAt(_selectedIndex),
         ));
   }
@@ -150,7 +165,16 @@ class HomePageState extends State<HomePage> {
         ],
       );
     }
-    return Text(bind.mainGetAppNameSync());
+    // Simbolo del marchio accanto al nome, come sul sito e nelle schermate Play
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      SvgPicture.asset(
+          isDark ? 'assets/simbolo-su-scuro.svg' : 'assets/simbolo.svg',
+          height: 20),
+      const SizedBox(width: 8),
+      Text(bind.mainGetAppNameSync(),
+          style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.3)),
+    ]);
   }
 }
 

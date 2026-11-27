@@ -879,7 +879,7 @@ class _PasswordWidgetState extends State<PasswordWidget> {
         icon: Icon(
             // Based on passwordVisible state choose the icon
             _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            color: MyTheme.lightTheme.primaryColor),
+            color: Theme.of(context).hintColor), // era il blu di Material
         onPressed: () {
           // Update the state i.e. toggle the state of passwordVisible variable
           setState(() {
@@ -2631,7 +2631,7 @@ void setSharedAbPasswordDialog(String abName, Peer peer) {
                 suffixIcon: IconButton(
                   icon: Icon(
                       passwordVisible ? Icons.visibility : Icons.visibility_off,
-                      color: MyTheme.lightTheme.primaryColor),
+                      color: Theme.of(context).hintColor), // era il blu di Material
                   onPressed: () {
                     setState(() {
                       passwordVisible = !passwordVisible;

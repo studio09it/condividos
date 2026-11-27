@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:dynamic_layouts/dynamic_layouts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/models/ab_model.dart';
 import 'package:flutter_hbb/models/peer_tab_model.dart';
@@ -191,11 +192,15 @@ class _PeersViewState extends State<_PeersView>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.sentiment_very_dissatisfied_rounded,
-                  color: Theme.of(context).tabBarTheme.labelColor,
-                  size: 40,
-                ).paddingOnly(bottom: 10),
+                // Simbolo del marchio in grigio al posto della faccina triste
+                SvgPicture.asset(
+                  'assets/simbolo-mono.svg',
+                  width: 44,
+                  colorFilter: ColorFilter.mode(
+                      (Theme.of(context).tabBarTheme.labelColor ?? Colors.grey)
+                          .withOpacity(0.35),
+                      BlendMode.srcIn),
+                ).paddingOnly(bottom: 14),
                 Text(
                   translate(
                     _emptyMessages[widget.peers.loadEvent] ?? 'Empty',

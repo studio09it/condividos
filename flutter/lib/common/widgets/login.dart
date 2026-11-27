@@ -746,7 +746,11 @@ Future<bool?> _openLoginDialog() async {
   fetchLoginOptions() async {
     loginOptionsInProgress.value = true;
     try {
-      loginOptions.value = await UserModel.queryOidcLoginOptions();
+      // ponytail: "webauth" è l'accesso via browser del server: doppione viola
+      // di email e password. Se un giorno serve un vero SSO, toglie il filtro.
+      loginOptions.value = (await UserModel.queryOidcLoginOptions())
+          .where((e) => e['name'] != 'webauth')
+          .toList();
       loginOptionsError.value = null;
     } catch (e) {
       debugPrint("queryOidcLoginOptions failed: $e");
@@ -1002,6 +1006,14 @@ Future<bool?> _openLoginDialog() async {
               userFocusNode: userFocusNode,
             ),
           thirdAuthWidget(),
+          // Solo su computer: sui telefoni un link alla registrazione obbliga anche
+          // a eliminare l'account dall'app (App Store 5.1.1(v)), arriva in Fase 2
+          if (isDesktop)
+            TextButton(
+              onPressed: () => launchUrl(
+                  Uri.parse('https://condividos.com/area.html#registrati')),
+              child: Text(translate('no-account-signup-tip')),
+            ).marginOnly(top: 8),
         ],
       ),
       onCancel: onDialogCancel,

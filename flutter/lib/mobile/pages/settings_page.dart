@@ -19,7 +19,6 @@ import '../../models/model.dart';
 import '../../models/platform_model.dart';
 import '../widgets/deploy_dialog.dart';
 import '../../models/shortcut_model.dart';
-import '../widgets/dialog.dart';
 import 'home_page.dart';
 import 'mobile_keyboard_shortcuts_page.dart';
 import 'scan_page.dart';
@@ -91,10 +90,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   var _localIP = "";
   var _directAccessPort = "";
   var _fingerprint = "";
-  var _buildDate = "";
   var _myId = "";
   var _autoDisconnectTimeout = "";
-  var _hideServer = false;
   var _hideProxy = false;
   var _hideNetwork = false;
   var _hideWebSocket = false;
@@ -136,8 +133,6 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         bind.mainGetOptionSync(key: kOptionAllowAutoDisconnect));
     _autoDisconnectTimeout =
         bind.mainGetOptionSync(key: kOptionAutoDisconnectTimeout);
-    _hideServer =
-        bind.mainGetBuildinOption(key: kOptionHideServerSetting) == 'Y';
     _hideProxy = bind.mainGetBuildinOption(key: kOptionHideProxySetting) == 'Y';
     _hideNetwork =
         bind.mainGetBuildinOption(key: kOptionHideNetworkSetting) == 'Y';
@@ -218,12 +213,6 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       if (_fingerprint != fingerprint) {
         update = true;
         _fingerprint = fingerprint;
-      }
-
-      final buildDate = await bind.mainGetBuildDate();
-      if (_buildDate != buildDate) {
-        update = true;
-        _buildDate = buildDate;
       }
 
       final myId = await bind.mainGetMyId();
@@ -729,6 +718,13 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     final hideSecuritySettings =
         bind.mainGetBuildinOption(key: kOptionHideSecuritySetting) == 'Y';
     final settings = SettingsList(
+      // Scuro con le superfici del sito, non il nero puro di iOS
+      darkTheme: const SettingsThemeData(
+        settingsListBackground: MyTheme.nero,
+        settingsSectionBackground: MyTheme.cardScura,
+        dividerColor: MyTheme.lineaScura,
+        titleTextColor: MyTheme.grigioScuro,
+      ),
       sections: [
         customClientSection,
         if (!bind.isDisableAccount())
@@ -761,29 +757,184 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             ],
           ),
         SettingsSection(title: Text(translate("Settings")), tiles: [
-          if (!disabledSettings && !_hideNetwork && !_hideServer)
-            SettingsTile(
-                title: Text(translate('ID/Relay Server')),
-                leading: Icon(Icons.cloud),
-                onPressed: (context) {
-                  showServerSettings(gFFI.dialogManager, (callback) async {
-                    _isUsingPublicServer = await bind.mainIsUsingPublicServer();
-                    setState(callback);
-                  });
-                }),
-          if (!_hideNetwork && !_hideProxy)
-            SettingsTile(
-                title: Text(translate('Socks5/Http(s) Proxy')),
-                leading: Icon(Icons.network_ping),
-                onPressed: (context) {
-                  changeSocks5Proxy();
-                }),
+          SettingsTile(
+              title: Text(translate('Language')),
+              leading: Icon(Icons.translate),
+              onPressed: (context) {
+                showLanguageSettings(gFFI.dialogManager);
+              }),
+          // Voce semplice: su iOS la "navigation" disegna la freccia col font
+          // Cupertino, che l'app non include (usciva un "?")
+          SettingsTile(
+            title: Text(translate('Theme')),
+            leading: Icon(Icons.contrast),
+            value: Text(translate(const {
+                  ThemeMode.dark: 'Dark',
+                  ThemeMode.light: 'Light'
+                }[MyTheme.getThemeModePreference()] ??
+                'Follow System')),
+            onPressed: (context) {
+              showThemeSettings(gFFI.dialogManager);
+            },
+          ),
+          if (!disabledSettings)
+            SettingsTile.navigation(
+              leading: Icon(Icons.keyboard_outlined),
+              title: Text(translate('Keyboard shortcuts')),
+              value: Text(ShortcutModel.isEnabled()
+                  ? translate('On')
+                  : translate('Off')),
+              trailing: Icon(Icons.arrow_forward_ios),
+              onPressed: (context) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const MobileKeyboardShortcutsPage(),
+                    )).then((_) {
+                  if (mounted) setState(() {});
+                });
+              },
+            ),
+          if (!bind.isDisableAccount())
+            SettingsTile.switchTile(
+              title: Text(translate('note-at-conn-end-tip')),
+              initialValue: _allowAskForNoteAtEndOfConnection,
+              onToggle: (v) async {
+                if (v && !gFFI.userModel.isLogin) {
+                  final res = await loginDialog();
+                  if (res != true) return;
+                }
+                await mainSetLocalBoolOption(
+                    kOptionAllowAskForNoteAtEndOfConnection, v);
+                final newValue = mainGetLocalBoolOptionSync(
+                    kOptionAllowAskForNoteAtEndOfConnection);
+                setState(() {
+                  _allowAskForNoteAtEndOfConnection = newValue;
+                });
+              },
+            ),
+          if (!incomingOnly)
+            SettingsTile.switchTile(
+              title:
+                  Text(translate('keep-awake-during-outgoing-sessions-label')),
+              initialValue: _preventSleepWhileConnected,
+              onToggle: (v) async {
+                await mainSetLocalBoolOption(
+                    kOptionKeepAwakeDuringOutgoingSessions, v);
+                setState(() {
+                  _preventSleepWhileConnected = v;
+                });
+              },
+            ),
           if (isAndroid && !bind.isOutgoingOnly())
             SettingsTile(
                 title: Text(translate('Deploy')),
                 leading: Icon(Icons.cloud_upload),
                 onPressed: (context) {
                   showDeployDialog();
+                }),
+        ]),
+        if (isAndroid)
+          SettingsSection(title: Text(translate('Hardware Codec')), tiles: [
+            SettingsTile.switchTile(
+              title: Text(translate('Enable hardware codec')),
+              initialValue: _enableHardwareCodec,
+              onToggle: isOptionFixed(kOptionEnableHwcodec)
+                  ? null
+                  : (v) async {
+                      await mainSetBoolOption(kOptionEnableHwcodec, v);
+                      final newValue =
+                          await mainGetBoolOption(kOptionEnableHwcodec);
+                      setState(() {
+                        _enableHardwareCodec = newValue;
+                      });
+                    },
+            ),
+          ]),
+        if (isAndroid)
+          SettingsSection(
+            title: Text(translate("Recording")),
+            tiles: [
+              if (!outgoingOnly)
+                SettingsTile.switchTile(
+                  title:
+                      Text(translate('Automatically record incoming sessions')),
+                  initialValue: _autoRecordIncomingSession,
+                  onToggle: isOptionFixed(kOptionAllowAutoRecordIncoming)
+                      ? null
+                      : (v) async {
+                          await bind.mainSetOption(
+                              key: kOptionAllowAutoRecordIncoming,
+                              value: bool2option(
+                                  kOptionAllowAutoRecordIncoming, v));
+                          final newValue = option2bool(
+                              kOptionAllowAutoRecordIncoming,
+                              await bind.mainGetOption(
+                                  key: kOptionAllowAutoRecordIncoming));
+                          setState(() {
+                            _autoRecordIncomingSession = newValue;
+                          });
+                        },
+                ),
+              if (!incomingOnly)
+                SettingsTile.switchTile(
+                  title:
+                      Text(translate('Automatically record outgoing sessions')),
+                  initialValue: _autoRecordOutgoingSession,
+                  onToggle: isOptionFixed(kOptionAllowAutoRecordOutgoing)
+                      ? null
+                      : (v) async {
+                          await bind.mainSetLocalOption(
+                              key: kOptionAllowAutoRecordOutgoing,
+                              value: bool2option(
+                                  kOptionAllowAutoRecordOutgoing, v));
+                          final newValue = option2bool(
+                              kOptionAllowAutoRecordOutgoing,
+                              bind.mainGetLocalOption(
+                                  key: kOptionAllowAutoRecordOutgoing));
+                          setState(() {
+                            _autoRecordOutgoingSession = newValue;
+                          });
+                        },
+                ),
+              SettingsTile(
+                title: Text(translate("Directory")),
+                description: Text(bind.mainVideoSaveDirectory(root: false)),
+              ),
+            ],
+          ),
+        if (isAndroid &&
+            !disabledSettings &&
+            !outgoingOnly &&
+            !hideSecuritySettings)
+          SettingsSection(title: Text('2FA'), tiles: tfaTiles),
+        if (isAndroid &&
+            !disabledSettings &&
+            !outgoingOnly &&
+            !hideSecuritySettings)
+          SettingsSection(
+            title: Text(translate("Share screen")),
+            tiles: shareScreenTiles,
+          ),
+        if (!bind.isIncomingOnly()) defaultDisplaySection(),
+        if (isAndroid &&
+            !disabledSettings &&
+            !outgoingOnly &&
+            !hideSecuritySettings)
+          SettingsSection(
+            title: Text(translate("Enhancements")),
+            tiles: enhancementsTiles,
+          ),
+        // Rete in fondo: al primo sguardo servono account, aspetto e sessione.
+        // ponytail: niente "Server ID/Relay", il server CondividOS è nel codice e cambiarlo stacca l'app
+        if (!_hideNetwork)
+          SettingsSection(title: Text(translate("Network")), tiles: [
+          if (!_hideNetwork && !_hideProxy)
+            SettingsTile(
+                title: Text(translate('Socks5/Http(s) Proxy')),
+                leading: Icon(Icons.network_ping),
+                onPressed: (context) {
+                  changeSocks5Proxy();
                 }),
           if (!disabledSettings && !_hideNetwork && !_hideWebSocket)
             SettingsTile.switchTile(
@@ -892,165 +1043,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                       });
                     },
             ),
-          SettingsTile(
-              title: Text(translate('Language')),
-              leading: Icon(Icons.translate),
-              onPressed: (context) {
-                showLanguageSettings(gFFI.dialogManager);
-              }),
-          SettingsTile(
-            title: Text(translate(
-                Theme.of(context).brightness == Brightness.light
-                    ? 'Light Theme'
-                    : 'Dark Theme')),
-            leading: Icon(Theme.of(context).brightness == Brightness.light
-                ? Icons.dark_mode
-                : Icons.light_mode),
-            onPressed: (context) {
-              showThemeSettings(gFFI.dialogManager);
-            },
-          ),
-          if (!disabledSettings)
-            SettingsTile.navigation(
-              leading: Icon(Icons.keyboard_outlined),
-              title: Text(translate('Keyboard shortcuts')),
-              description: Text(ShortcutModel.isEnabled()
-                  ? translate('On')
-                  : translate('Off')),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onPressed: (context) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MobileKeyboardShortcutsPage(),
-                    )).then((_) {
-                  if (mounted) setState(() {});
-                });
-              },
-            ),
-          if (!bind.isDisableAccount())
-            SettingsTile.switchTile(
-              title: Text(translate('note-at-conn-end-tip')),
-              initialValue: _allowAskForNoteAtEndOfConnection,
-              onToggle: (v) async {
-                if (v && !gFFI.userModel.isLogin) {
-                  final res = await loginDialog();
-                  if (res != true) return;
-                }
-                await mainSetLocalBoolOption(
-                    kOptionAllowAskForNoteAtEndOfConnection, v);
-                final newValue = mainGetLocalBoolOptionSync(
-                    kOptionAllowAskForNoteAtEndOfConnection);
-                setState(() {
-                  _allowAskForNoteAtEndOfConnection = newValue;
-                });
-              },
-            ),
-          if (!incomingOnly)
-            SettingsTile.switchTile(
-              title:
-                  Text(translate('keep-awake-during-outgoing-sessions-label')),
-              initialValue: _preventSleepWhileConnected,
-              onToggle: (v) async {
-                await mainSetLocalBoolOption(
-                    kOptionKeepAwakeDuringOutgoingSessions, v);
-                setState(() {
-                  _preventSleepWhileConnected = v;
-                });
-              },
-            ),
-        ]),
-        if (isAndroid)
-          SettingsSection(title: Text(translate('Hardware Codec')), tiles: [
-            SettingsTile.switchTile(
-              title: Text(translate('Enable hardware codec')),
-              initialValue: _enableHardwareCodec,
-              onToggle: isOptionFixed(kOptionEnableHwcodec)
-                  ? null
-                  : (v) async {
-                      await mainSetBoolOption(kOptionEnableHwcodec, v);
-                      final newValue =
-                          await mainGetBoolOption(kOptionEnableHwcodec);
-                      setState(() {
-                        _enableHardwareCodec = newValue;
-                      });
-                    },
-            ),
           ]),
-        if (isAndroid)
-          SettingsSection(
-            title: Text(translate("Recording")),
-            tiles: [
-              if (!outgoingOnly)
-                SettingsTile.switchTile(
-                  title:
-                      Text(translate('Automatically record incoming sessions')),
-                  initialValue: _autoRecordIncomingSession,
-                  onToggle: isOptionFixed(kOptionAllowAutoRecordIncoming)
-                      ? null
-                      : (v) async {
-                          await bind.mainSetOption(
-                              key: kOptionAllowAutoRecordIncoming,
-                              value: bool2option(
-                                  kOptionAllowAutoRecordIncoming, v));
-                          final newValue = option2bool(
-                              kOptionAllowAutoRecordIncoming,
-                              await bind.mainGetOption(
-                                  key: kOptionAllowAutoRecordIncoming));
-                          setState(() {
-                            _autoRecordIncomingSession = newValue;
-                          });
-                        },
-                ),
-              if (!incomingOnly)
-                SettingsTile.switchTile(
-                  title:
-                      Text(translate('Automatically record outgoing sessions')),
-                  initialValue: _autoRecordOutgoingSession,
-                  onToggle: isOptionFixed(kOptionAllowAutoRecordOutgoing)
-                      ? null
-                      : (v) async {
-                          await bind.mainSetLocalOption(
-                              key: kOptionAllowAutoRecordOutgoing,
-                              value: bool2option(
-                                  kOptionAllowAutoRecordOutgoing, v));
-                          final newValue = option2bool(
-                              kOptionAllowAutoRecordOutgoing,
-                              bind.mainGetLocalOption(
-                                  key: kOptionAllowAutoRecordOutgoing));
-                          setState(() {
-                            _autoRecordOutgoingSession = newValue;
-                          });
-                        },
-                ),
-              SettingsTile(
-                title: Text(translate("Directory")),
-                description: Text(bind.mainVideoSaveDirectory(root: false)),
-              ),
-            ],
-          ),
-        if (isAndroid &&
-            !disabledSettings &&
-            !outgoingOnly &&
-            !hideSecuritySettings)
-          SettingsSection(title: Text('2FA'), tiles: tfaTiles),
-        if (isAndroid &&
-            !disabledSettings &&
-            !outgoingOnly &&
-            !hideSecuritySettings)
-          SettingsSection(
-            title: Text(translate("Share screen")),
-            tiles: shareScreenTiles,
-          ),
-        if (!bind.isIncomingOnly()) defaultDisplaySection(),
-        if (isAndroid &&
-            !disabledSettings &&
-            !outgoingOnly &&
-            !hideSecuritySettings)
-          SettingsSection(
-            title: Text(translate("Enhancements")),
-            tiles: enhancementsTiles,
-          ),
         SettingsSection(
           title: Text(translate("About")),
           tiles: [
@@ -1067,14 +1060,9 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                       )),
                 ),
                 leading: Icon(Icons.info)),
-            SettingsTile(
-                title: Text(translate("Build Date")),
-                value: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(_buildDate),
-                ),
-                leading: Icon(Icons.query_builder)),
-            if (isAndroid)
+            // ID e impronta servono solo a chi si fa controllare: su un telefono che
+            // controlla e basta confondono. Data di build tolta, la versione basta.
+            if (isAndroid && !outgoingOnly)
               SettingsTile(
                   onPressed: (context) => onCopyFingerprint(_fingerprint),
                   title: Text(translate("Fingerprint")),
@@ -1083,7 +1071,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                     child: Text(_fingerprint),
                   ),
                   leading: Icon(Icons.fingerprint)),
-            SettingsTile(
+            if (isAndroid && !outgoingOnly)
+              SettingsTile(
                 onPressed: (context) => onCopyId(_myId),
                 title: Text(translate("ID")),
                 value: Padding(
@@ -1123,8 +1112,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   }
 
   defaultDisplaySection() {
+    // Senza titolo: ripeteva il nome dell'unica voce
     return SettingsSection(
-      title: Text(translate("Display Settings")),
       tiles: [
         SettingsTile(
             title: Text(translate('Display Settings')),
