@@ -125,6 +125,16 @@ pub fn install_me(_options: String, _path: String, _silent: bool, _debug: bool) 
 
 #[inline]
 pub fn update_me(_path: String) {
+    // macOS: questa copia (aperta dal .dmg) sostituisce /Applications/<App>.app con lo script
+    // privilegiato di upstream, che ferma servizio e agente: il Finder non può, li trova in uso.
+    #[cfg(target_os = "macos")]
+    {
+        match crate::platform::update_me() {
+            Ok(()) => std::process::exit(0),
+            Err(e) => log::error!("update_me: {e}"),
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
     goto_install();
 }
 

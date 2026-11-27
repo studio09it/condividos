@@ -519,6 +519,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       }
     } else if (isMacOS) {
       final isOutgoingOnly = bind.isOutgoingOnly();
+      // Aperta dal .dmg con il servizio già installato: trascinarla in Applicazioni fallisce
+      // ("in uso"), quindi aggiorna lei la copia installata.
+      if (!bind.mainIsInstalled() && bind.mainIsInstalledDaemon(prompt: false)) {
+        return buildInstallCard("Status", "Your installation is lower version.",
+            "Click to upgrade", () async => bind.mainUpdateMe());
+      }
       if (!(isOutgoingOnly || bind.mainIsCanScreenRecording(prompt: false))) {
         return buildInstallCard("Permissions", "config_screen", "Configure",
             () async {
