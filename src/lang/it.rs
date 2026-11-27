@@ -408,6 +408,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("software_render_tip", "Se nel computer con Linux è presente una scheda grafica Nvidia e la finestra remota si chiude immediatamente dopo la connessione, installa il nuovo driver open source e usa il rendering software.\nPotrebbe essere necessario un riavvio del programma."),
         ("Always use software rendering", "Usa sempre rendering software"),
         ("config_input", "Per controllare il desktop remoto con la tastiera, è necessario concedere le autorizzazioni a RustDesk 'Monitoraggio input'."),
+        ("config_restart", "Permessi attivati. Riavvia RustDesk per renderli effettivi."),
+        ("Restart", "Riavvia"),
         ("config_microphone", "Per poter chiamare, è necessario concedere l'autorizzazione 'Registra audio' a RustDesk."),
         ("request_elevation_tip", "Se c'è qualcuno nel lato remoto è possibile richiedere l'elevazione."),
         ("Wait", "Attendi"),

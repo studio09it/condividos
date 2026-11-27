@@ -47,6 +47,10 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   var watchIsProcessTrust = false;
   var watchIsInputMonitoring = false;
   var watchIsCanRecordAudio = false;
+  // CondividOS: Accessibilità e Monitoraggio input contano solo per i processi
+  // avviati dopo il permesso, e macOS (a differenza della Registrazione
+  // schermo) non chiede di riavviare: lo chiediamo noi.
+  var restartForPermissions = false;
   Timer? _updateTimer;
   bool isCardClosed = false;
 
@@ -537,6 +541,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           bind.mainIsCanInputMonitoring(prompt: true);
           watchIsInputMonitoring = true;
         }, help: 'Help', link: translate("doc_mac_permission"));
+      } else if (restartForPermissions) {
+        return buildInstallCard(
+            "Permissions", "config_restart", "Restart", restartMacApp);
       } else if (!isOutgoingOnly &&
           !svcStopped.value &&
           bind.mainIsInstalled() &&
@@ -620,6 +627,23 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     return Container();
   }
 
+  // Riavvia la finestra e il --server, che è il processo che controlla il Mac:
+  // launchd lo fa ripartire da solo (KeepAlive), poi `open` riapre la finestra.
+  void restartMacApp() async {
+    final exe = Platform.resolvedExecutable;
+    final app = File(exe).parent.parent.parent.path;
+    await Process.start(
+        '/bin/sh',
+        [
+          '-c',
+          r'sleep 1; /usr/bin/pkill -f "$0 --server"; sleep 2; /usr/bin/open "$1"',
+          exe,
+          app
+        ],
+        mode: ProcessStartMode.detached);
+    exit(0);
+  }
+
   Widget buildInstallCard(String title, String content, String btnText,
       GestureTapCallback onPressed,
       {double marginTop = 20.0,
@@ -650,15 +674,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       children: [
         Container(
           margin: EdgeInsets.fromLTRB(
-              0, marginTop, 0, bind.isIncomingOnly() ? marginTop : 0),
+              14, marginTop, 14, bind.isIncomingOnly() ? marginTop : 0),
           child: Container(
               decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
                   gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  Color.fromARGB(255, 226, 66, 188),
-                  Color.fromARGB(255, 244, 114, 124),
+                  // CondividOS: verdi del sito al posto del rosa di RustDesk
+                  Color(0xFF0B5D34),
+                  MyTheme.accent,
                 ],
               )),
               padding: EdgeInsets.all(20),
@@ -727,7 +753,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         if (closeButton != null && closeButton == true)
           Positioned(
             top: 18,
-            right: 0,
+            right: 14,
             child: IconButton(
               icon: Icon(
                 Icons.close,
@@ -765,12 +791,14 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       if (watchIsProcessTrust) {
         if (bind.mainIsProcessTrusted(prompt: false)) {
           watchIsProcessTrust = false;
+          restartForPermissions = true;
           setState(() {});
         }
       }
       if (watchIsInputMonitoring) {
         if (bind.mainIsCanInputMonitoring(prompt: false)) {
           watchIsInputMonitoring = false;
+          restartForPermissions = true;
           // Do not notify for now.
           // Monitoring may not take effect until the process is restarted.
           // rustDeskWinManager.call(
