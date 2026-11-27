@@ -203,6 +203,9 @@ pub fn translate(name: String) -> String {
 }
 
 pub fn translate_locale(name: String, locale: &str) -> String {
+    // CondividOS: sui telefoni niente invito a comprare Pro fuori dallo store (App Store 3.1.3(f), Google Play Pagamenti)
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    let name = if name == "Closed manually by web console" { "Free minutes ended".to_owned() } else { name };
     let lang = resolve_lang(
         &hbb_common::config::LocalConfig::get_option("lang"),
         locale,

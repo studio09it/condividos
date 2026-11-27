@@ -1061,7 +1061,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 title: Text('${translate('Version')}: $version'),
                 value: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
+                  child: Text('condividos.com',
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                       )),
@@ -1096,6 +1096,14 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               onPressed: (context) =>
                   launchUrlString('https://condividos.com/privacy.html'),
               leading: Icon(Icons.privacy_tip),
+            ),
+            // AGPL: crediti originali e link al sorgente, come nella schermata Info del desktop
+            SettingsTile(
+              title: Text('© STUDIO 09 S.R.L. — Based on RustDesk © Purslane Tech Pte. Ltd.'),
+              value: Text('Source: https://github.com/studio09it/condividos'),
+              onPressed: (context) =>
+                  launchUrlString('https://github.com/studio09it/condividos'),
+              leading: Icon(Icons.code),
             )
           ],
         ),
@@ -1212,7 +1220,7 @@ void showAbout(OverlayDialogManager dialogManager) {
             },
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('rustdesk.com',
+              child: Text('condividos.com',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   )),

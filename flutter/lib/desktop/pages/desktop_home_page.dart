@@ -45,11 +45,13 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   var svcStopped = false.obs;
   var watchIsCanScreenRecording = false;
   var watchIsProcessTrust = false;
-  var watchIsInputMonitoring = false;
   var watchIsCanRecordAudio = false;
   // CondividOS: Accessibilità e Monitoraggio input contano solo per i processi
   // avviati dopo il permesso, e macOS (a differenza della Registrazione
-  // schermo) non chiede di riavviare: lo chiediamo noi.
+  // schermo) non chiede di riavviare: lo chiediamo noi. Il Monitoraggio input
+  // l'app lo vede solo dopo il riavvio (sui macOS recenti è lo stesso
+  // interruttore dell'Accessibilità), quindi da qui la scheda Riavvia prende il
+  // suo posto.
   var restartForPermissions = false;
   Timer? _updateTimer;
   bool isCardClosed = false;
@@ -541,11 +543,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           bind.mainIsProcessTrusted(prompt: true);
           watchIsProcessTrust = true;
         }, help: 'Help', link: translate("doc_mac_permission"));
-      } else if (!bind.mainIsCanInputMonitoring(prompt: false)) {
+      } else if (!restartForPermissions &&
+          !bind.mainIsCanInputMonitoring(prompt: false)) {
         return buildInstallCard("Permissions", "config_input", "Configure",
             () async {
           bind.mainIsCanInputMonitoring(prompt: true);
-          watchIsInputMonitoring = true;
+          setState(() => restartForPermissions = true);
         }, help: 'Help', link: translate("doc_mac_permission"));
       } else if (restartForPermissions) {
         return buildInstallCard(
@@ -798,17 +801,6 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         if (bind.mainIsProcessTrusted(prompt: false)) {
           watchIsProcessTrust = false;
           restartForPermissions = true;
-          setState(() {});
-        }
-      }
-      if (watchIsInputMonitoring) {
-        if (bind.mainIsCanInputMonitoring(prompt: false)) {
-          watchIsInputMonitoring = false;
-          restartForPermissions = true;
-          // Do not notify for now.
-          // Monitoring may not take effect until the process is restarted.
-          // rustDeskWinManager.call(
-          //     WindowType.RemoteDesktop, kWindowDisableGrabKeyboard, '');
           setState(() {});
         }
       }

@@ -1870,6 +1870,33 @@ jobs:
           mkdir -p signed-apk
           mv ./flutter/build/app/outputs/flutter-apk/app-${{ env.reltype }}.apk signed-apk/rustdesk-${{ env.VERSION }}-universal${{ env.suffix }}.apk
 
+      # CondividOS: bundle per Google Play, firmato con la chiave di caricamento (gli stessi secret dell'APK)
+      - name: Build CondividOS app bundle (Google Play)
+        if: env.ANDROID_SIGNING_KEY != null
+        shell: bash
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          KEY_B64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          KEY_ALIAS: ${{ secrets.ANDROID_ALIAS }}
+          STORE_PW: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          export PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:$PATH
+          echo "$KEY_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' "$RUNNER_TEMP/upload.jks" "$STORE_PW" "$KEY_ALIAS" "$KEY_PW" > flutter/android/key.properties
+          sed -i "s/signingConfigs.debug/signingConfigs.release/g" flutter/android/app/build.gradle
+          cd flutter
+          # ponytail: versionCode = numero del run, sale da solo a ogni build (Play rifiuta un versionCode già caricato)
+          flutter build appbundle --release --build-number ${{ github.run_number }} --target-platform android-arm64,android-arm,android-x64
+          mv build/app/outputs/bundle/release/app-release.aab ../condividos-${{ env.VERSION }}-${{ github.run_number }}.aab
+
+      - name: Upload CondividOS app bundle
+        if: env.ANDROID_SIGNING_KEY != null
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: condividos-aab
+          path: condividos-${{ env.VERSION }}-${{ github.run_number }}.aab
+
       # https://github.com/r0adkll/sign-android-release/issues/84#issuecomment-1889636075
       - name: Setup sign tool version variable
         shell: bash

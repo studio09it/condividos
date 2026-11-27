@@ -3,6 +3,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
     [
         ("desk_tip", "Your desktop can be accessed with this ID and password."),
         ("Closed manually by web console", "You have used up today's free minutes. Upgrade to Pro at condividos.com to use CondividOS without limits."),  // CondividOS: chiusa da conti, fine minuti Free
+        ("Free minutes ended", "You have used up today's free minutes."),  // CondividOS: stesso messaggio su iOS/Android
         ("connecting_status", "Connecting to the RustDesk network..."),
         ("not_ready_status", "Not ready. Please check your connection"),
         ("ID/Relay Server", "ID/Relay server"),
@@ -131,7 +132,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("wayland_experiment_tip", "Wayland support is in experimental stage, please use X11 if you require unattended access."),
         ("software_render_tip", "If you're using Nvidia graphics card under Linux and the remote window closes immediately after connecting, switching to the open-source Nouveau driver and choosing to use software rendering may help. A software restart is required."),
         ("config_input", "In order to control remote desktop with keyboard, you need to grant RustDesk \"Input Monitoring\" permissions."),
-        ("config_restart", "Permissions enabled. Restart RustDesk to apply them."),
+        ("config_restart", "Once the permissions are enabled in System Settings, restart RustDesk to apply them."),
         ("config_microphone", "In order to speak remotely, you need to grant RustDesk \"Record Audio\" permissions."),
         ("request_elevation_tip", "You can also request elevation if there is someone on the remote side."),
         ("Elevation Error", "Elevation error"),
