@@ -2879,7 +2879,9 @@ pub fn is_incoming_only() -> bool {
 
 #[inline]
 pub fn is_outgoing_only() -> bool {
-    HARD_SETTINGS
+    // ponytail: CondividOS su Android solo controlla, non condivide lo schermo (vedi AndroidManifest)
+    cfg!(target_os = "android")
+        || HARD_SETTINGS
         .read()
         .unwrap()
         .get("conn-type")
