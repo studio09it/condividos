@@ -644,6 +644,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("upgrade_remote_rustdesk_client_to_{}_tip", "Aggiorna il client RustDesk remoto alla versione {} o successiva!"),
         ("d3d_render_tip", "Quando è abilitato il rendering D3D, in alcuni computer la schermata del telecomando potrebbe essere nera."),
         ("Use D3D rendering", "Usa rendering D3D"),
+        ("My computers", "I miei computer"),
+        ("Recent", "Recenti"),
         ("Printer", "Stampante"),
         ("printer-os-requirement-tip", "La funzione della stampante richiede Windows 10 o superiore."),
         ("printer-requires-installed-{}-client-tip", "Per usare la stampa remota, {} è necessario installare il programma nel dispositivo."),

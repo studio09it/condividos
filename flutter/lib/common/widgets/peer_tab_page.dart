@@ -89,6 +89,42 @@ class _PeerTabPageState extends State<PeerTabPage>
         bind.mainGetLocalOption(key: kOptionHideAbTagsPanel) == 'Y';
   }
 
+  Worker? _loginWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    // Telefono: con l'accesso fatto si parte dai propri computer
+    if (isMobile) {
+      if (gFFI.userModel.isLogin) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _selectMine());
+      }
+      _loginWorker = ever(gFFI.userModel.userName, (String name) {
+        if (name.isNotEmpty) _selectMine();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _loginWorker?.dispose();
+    super.dispose();
+  }
+
+  void _selectMine() {
+    if (mounted && gFFI.peerTabModel.isEnabled[PeerTabIndex.group.index]) {
+      handleTabSelection(PeerTabIndex.group.index);
+    }
+  }
+
+  // Sul telefono tre voci fisse; rete locale e rubrica restano sul desktop
+  List<int> _tabs(PeerTabModel model) => isMobile
+      ? [PeerTabIndex.recent, PeerTabIndex.fav, PeerTabIndex.group]
+          .map((e) => e.index)
+          .where((t) => model.isEnabled[t])
+          .toList()
+      : model.visibleEnabledOrderedIndexs;
+
   Future<void> handleTabSelection(int tabIndex) async {
     if (tabIndex < entries.length) {
       if (tabIndex != gFFI.peerTabModel.currentTab) {
@@ -111,7 +147,7 @@ class _PeerTabPageState extends State<PeerTabPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() => SizedBox(
-              height: 32,
+              height: isMobile ? 38 : 32,
               child: Container(
                 padding: stateGlobal.isPortrait.isTrue
                     ? EdgeInsets.symmetric(horizontal: 2)
@@ -120,8 +156,10 @@ class _PeerTabPageState extends State<PeerTabPage>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
-                        child: visibleContextMenuListener(
-                            _createSwitchBar(context))),
+                        child: isMobile
+                            ? _createSegments(context)
+                            : visibleContextMenuListener(
+                                _createSwitchBar(context))),
                     if (stateGlobal.isPortrait.isTrue)
                       ..._portraitRightActions(context)
                     else
@@ -186,20 +224,75 @@ class _PeerTabPageState extends State<PeerTabPage>
         }).toList());
   }
 
+  // Controllo a segmenti con le voci scritte, al posto delle icone senza nome
+  Widget _createSegments(BuildContext context) {
+    final model = Provider.of<PeerTabModel>(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    const labels = {0: 'Recent', 1: 'Favorites', 4: 'My computers'};
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+          color: theme.cardColor, borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        children: _tabs(model).map((t) {
+          final selected = model.currentTab == t;
+          return Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: isOptionFixed(kOptionPeerTabIndex)
+                  ? null
+                  : () async {
+                      await handleTabSelection(t);
+                      await bind.setLocalFlutterOption(
+                          k: kOptionPeerTabIndex, v: t.toString());
+                    },
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: selected
+                    ? BoxDecoration(
+                        color: isDark ? MyTheme.pannelloScuro : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: theme.dividerColor),
+                      )
+                    : null,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    translate(labels[t] ?? model.tabTooltip(t)),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                      color: selected
+                          ? theme.textTheme.titleLarge?.color
+                          : (isDark ? MyTheme.grigioScuro : Colors.black54),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _createPeersView() {
     final model = Provider.of<PeerTabModel>(context);
+    final tabs = _tabs(model);
     Widget child;
-    if (model.visibleEnabledOrderedIndexs.isEmpty) {
+    if (tabs.isEmpty) {
       child = visibleContextMenuListener(Row(
         children: [Expanded(child: InkWell())],
       ));
     } else {
-      if (model.visibleEnabledOrderedIndexs.contains(model.currentTab)) {
+      if (tabs.contains(model.currentTab)) {
         child = entries[model.currentTab].widget;
       } else {
         debugPrint("should not happen! currentTab not in visibleIndexs");
         Future.delayed(Duration.zero, () {
-          model.setCurrentTab(model.visibleEnabledOrderedIndexs[0]);
+          model.setCurrentTab(tabs[0]);
         });
         child = entries[0].widget;
       }
