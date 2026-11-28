@@ -219,11 +219,86 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         ],
       ),
       child: Column(children: [
+        Obx(() => _buildCardStatus(context)),
         buildIDBoard(context),
         Divider(height: 1, indent: 16, endIndent: 16),
         buildPasswordBoard(context),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _copyIdAndPassword,
+            style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                textStyle: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w600)),
+            icon: const Icon(Icons.copy_rounded, size: 16),
+            // una riga sola anche nel pannello stretto da 240 px
+            label: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(translate('Copy ID and password'), maxLines: 1)),
+          ),
+        ).marginOnly(left: 14, right: 14, bottom: 14),
       ]),
     );
+  }
+
+  // Chi riceve assistenza vede subito se è pronto (prima era in basso a destra)
+  Widget _buildCardStatus(BuildContext context) {
+    final status = stateGlobal.svcStatus.value;
+    final ready = !svcStopped.value && status == SvcStatus.ready;
+    final color = svcStopped.value || status == SvcStatus.connecting
+        ? kColorWarn
+        : ready
+            ? MyTheme.verde
+            : const Color.fromARGB(255, 224, 79, 95);
+    final text = svcStopped.value
+        ? translate("Service is not running")
+        : status == SvcStatus.connecting
+            ? translate("connecting_status")
+            : status == SvcStatus.notReady
+                ? translate("not_ready_status")
+                : translate('Ready to receive support');
+    return Row(children: [
+      Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          boxShadow: ready ? [BoxShadow(color: color, blurRadius: 8)] : null,
+        ),
+      ).marginOnly(right: 8),
+      Flexible(
+          child: Text(text,
+              style: TextStyle(fontSize: 12.5, color: ready ? color : null))),
+      if (svcStopped.value)
+        InkWell(
+          onTap: () => start_service(true),
+          child: Text(translate("Start service"),
+              style: const TextStyle(
+                  fontSize: 12.5, decoration: TextDecoration.underline)),
+        ).marginOnly(left: 8),
+    ]).marginOnly(left: 16, right: 16, top: 8, bottom: 2);
+  }
+
+  static bool _hasOneTimePassword(ServerModel model) =>
+      model.approveMode != 'click' &&
+      model.verificationMethod != kUsePermanentPassword;
+
+  // Trattino o "Generazione ...": il servizio non ha ancora dato la password
+  static bool _passwordMissing(String text) =>
+      text.isEmpty || text == '-' || text == translate("Generating ...");
+
+  // Pronto da incollare in WhatsApp o in una mail
+  void _copyIdAndPassword() {
+    final model = gFFI.serverModel;
+    final pw = model.serverPasswd.text;
+    var text = '${bind.mainGetAppNameSync()} · ID ${model.serverId.text}';
+    if (_hasOneTimePassword(model) && !_passwordMissing(pw)) {
+      text += ' · ${translate("Password")} $pw';
+    }
+    Clipboard.setData(ClipboardData(text: text));
+    showToast(translate("Copied"));
   }
 
   static TextStyle _cardLabel(BuildContext context) => TextStyle(
@@ -330,8 +405,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     RxBool refreshHover = false.obs;
     RxBool editHover = false.obs;
     final textColor = Theme.of(context).textTheme.titleLarge?.color;
-    final showOneTime = model.approveMode != 'click' &&
-        model.verificationMethod != kUsePermanentPassword;
+    final showOneTime = _hasOneTimePassword(model);
+    final preparing = showOneTime && _passwordMissing(model.serverPasswd.text);
     return Container(
       margin: EdgeInsets.only(left: 16.0, right: 8, top: 12, bottom: 8),
       child: Row(
@@ -351,29 +426,45 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                   ),
                   Row(
                     children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onDoubleTap: () {
-                            if (showOneTime) {
-                              Clipboard.setData(
-                                  ClipboardData(text: model.serverPasswd.text));
-                              showToast(translate("Copied"));
-                            }
-                          },
-                          child: TextFormField(
-                            controller: model.serverPasswd,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              filled: false,
-                              contentPadding:
-                                  EdgeInsets.only(top: 14, bottom: 10),
-                            ),
-                            style: MyTheme.mono.copyWith(
-                                fontSize: 16, fontWeight: FontWeight.w600),
-                          ).workaroundFreezeLinuxMint(),
+                      if (preparing)
+                        Expanded(
+                          child: Obx(() => Row(children: [
+                                if (!svcStopped.value)
+                                  const SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 1.5),
+                                  ).marginOnly(right: 8),
+                                Text(translate('Preparing…'),
+                                    style: TextStyle(
+                                        fontSize: 14, color: textColor)),
+                              ]).marginOnly(top: 14, bottom: 10)),
+                        )
+                      else
+                        Expanded(
+                          child: GestureDetector(
+                            onDoubleTap: () {
+                              if (showOneTime) {
+                                Clipboard.setData(ClipboardData(
+                                    text: model.serverPasswd.text));
+                                showToast(translate("Copied"));
+                              }
+                            },
+                            child: TextFormField(
+                              controller: model.serverPasswd,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                filled: false,
+                                contentPadding:
+                                    EdgeInsets.only(top: 14, bottom: 10),
+                              ),
+                              style: MyTheme.mono.copyWith(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ).workaroundFreezeLinuxMint(),
+                          ),
                         ),
-                      ),
                       if (showOneTime)
                         AnimatedRotationWidget(
                           onPressed: () => bind.mainUpdateTemporaryPassword(),

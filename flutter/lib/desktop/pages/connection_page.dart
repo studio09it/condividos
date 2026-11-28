@@ -323,8 +323,10 @@ class _ConnectionPageState extends State<ConnectionPage>
             Expanded(child: PeerTabPage()),
           ],
         ).paddingOnly(left: 12.0)),
-        if (!isOutgoingOnly) const Divider(height: 1),
-        if (!isOutgoingOnly) OnlineStatusWidget()
+        // CondividOS: lo stato si vede nella scheda "Questo computer"; il widget
+        // resta, nascosto, perché è lui ad aggiornarlo ogni secondo
+        if (!isOutgoingOnly)
+          const Offstage(child: OnlineStatusWidget()),
       ],
     );
   }
