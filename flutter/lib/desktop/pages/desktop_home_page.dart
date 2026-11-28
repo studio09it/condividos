@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/animated_rotation_widget.dart';
 import 'package:flutter_hbb/common/widgets/custom_password.dart';
+import 'package:flutter_hbb/common/widgets/piano.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/connection_page.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_setting_page.dart';
@@ -92,6 +93,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ),
       buildTip(context),
       if (!isOutgoingOnly) buildIDCard(context),
+      if (!bind.isDisableAccount()) buildPianoCard(context),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -241,6 +243,39 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ]),
     );
   }
+
+  // Piano e minuti di chi controlla da qui. "Passa a Pro" solo sul desktop:
+  // sui telefoni niente inviti a pagare (App Store 3.1.3)
+  Widget buildPianoCard(BuildContext context) => Obx(() {
+        final u = gFFI.userModel;
+        if (!u.isLogin || u.piano.value.isEmpty) return const SizedBox.shrink();
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.fromLTRB(14, 4, 14, 6),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? MyTheme.cardScura
+                : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Theme.of(context).dividerColor),
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(u.accountLabelWithHandle,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 4),
+            pianoAccount(context),
+            if (u.piano.value == 'free')
+              OutlinedButton(
+                onPressed: () =>
+                    launchUrl(Uri.parse('https://condividos.com/area.html')),
+                child: Text(translate('Upgrade to Pro')),
+              ).marginOnly(top: 12),
+          ]),
+        );
+      });
 
   // Chi riceve assistenza vede subito se è pronto (prima era in basso a destra)
   Widget _buildCardStatus(BuildContext context) {
@@ -955,6 +990,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         await rustDeskWinManager.registerActiveWindow(call.arguments["id"]);
       } else if (call.method == kWindowEventHide) {
         await rustDeskWinManager.unregisterActiveWindow(call.arguments['id']);
+        gFFI.userModel.aggiornaConto(); // finestra di sessione chiusa: minuti nuovi
       } else if (call.method == kWindowConnect) {
         await connectMainDesktop(
           call.arguments['id'],

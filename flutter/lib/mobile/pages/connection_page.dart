@@ -14,6 +14,7 @@ import '../../common.dart';
 import '../../common/widgets/peer_tab_page.dart';
 import '../../common/widgets/autocomplete.dart';
 import '../../common/widgets/login.dart';
+import '../../common/widgets/piano.dart';
 import '../../consts.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
@@ -178,10 +179,16 @@ class _ConnectionPageState extends State<ConnectionPage> {
                 const Icon(Icons.account_circle, size: 30),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(user.accountLabelWithHandle,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(user.accountLabelWithHandle,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 2),
+                    pianoAccount(context),
+                  ]),
             ),
           ]),
         );

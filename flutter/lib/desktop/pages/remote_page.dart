@@ -20,6 +20,7 @@ import '../../models/platform_model.dart';
 import '../../models/shortcut_model.dart';
 import '../../common/shared_state.dart';
 import '../../utils/image.dart';
+import '../../common/widgets/piano.dart';
 import '../widgets/remote_toolbar.dart';
 import '../widgets/kb_layout_type_chooser.dart';
 import '../widgets/tabbar_widget.dart';
@@ -90,6 +91,7 @@ class _RemotePageState extends State<RemotePage>
         WidgetsBindingObserver,
         TickerProviderStateMixin {
   Timer? _timer;
+  Timer? _avvisoMinuti;
   String keyboardMode = "legacy";
   bool _isWindowBlur = false;
   // Known macOS remote-input trade-offs (kept simple intentionally):
@@ -159,6 +161,7 @@ class _RemotePageState extends State<RemotePage>
           widget.tabController?.state.listen(_onMacOSTabStateChanged);
     }
     Get.put<FFI>(_ffi, tag: widget.id);
+    _avvisoMinuti = avvisoMinutiFree();
     _ffi.imageModel.addCallbackOnFirstImage((String peerId) {
       _ffi.canvasModel.activateLocalCursor();
       showKBLayoutTypeChooserIfNeeded(
@@ -652,6 +655,7 @@ class _RemotePageState extends State<RemotePage>
 
   @override
   Future<void> dispose() async {
+    _avvisoMinuti?.cancel();
     final closeSession = closeSessionOnDispose.remove(widget.id) ?? true;
 
     // https://github.com/flutter/flutter/issues/64935

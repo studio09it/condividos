@@ -23,6 +23,10 @@ class UserModel {
   // True when networkError carries a server-reported error rather than a
   // connectivity failure; netWorkErrorWidget hides the network tip then.
   final RxBool networkErrorFromServer = false.obs;
+  // Piano dal servizio conti di CondividOS (server/conti): '' finché non si sa
+  final RxString piano = ''.obs;
+  final RxInt secondiUsati = 0.obs;
+  final RxInt minutiFree = 15.obs;
   bool get isLogin => userName.isNotEmpty;
   String get displayNameOrUserName =>
       displayName.value.trim().isEmpty ? userName.value : displayName.value;
@@ -98,6 +102,7 @@ class UserModel {
 
       final user = UserPayload.fromJson(data);
       _parseAndUpdateUser(user);
+      aggiornaConto();
     } catch (e) {
       debugPrint('Failed to refreshCurrentUser: $e');
       // Surface failures in the address book / group tabs, which offer a
@@ -145,6 +150,28 @@ class UserModel {
     userName.value = '';
     displayName.value = '';
     avatar.value = '';
+    piano.value = '';
+  }
+
+  /// Piano e minuti di oggi (sola lettura, li conta conti dal heartbeat).
+  /// Senza rete resta l'ultimo valore. True se la risposta è arrivata.
+  Future<bool> aggiornaConto({String? token}) async {
+    final t = token ?? bind.mainGetLocalOption(key: 'access_token');
+    if (t.isEmpty) return false;
+    try {
+      final r = await http.get(
+          Uri.parse('https://condividos.com/api/conto/stato'),
+          headers: {'api-token': t});
+      if (r.statusCode != 200) return false;
+      final d = jsonDecode(r.body);
+      piano.value = d['piano'] ?? '';
+      secondiUsati.value = d['secondi_usati'] ?? 0;
+      minutiFree.value = d['minuti_free'] ?? 15;
+      return true;
+    } catch (e) {
+      debugPrint('aggiornaConto: $e');
+      return false;
+    }
   }
 
   _parseAndUpdateUser(UserPayload user) {
@@ -229,6 +256,8 @@ class UserModel {
         loginResponse.access_token != null;
     if (isLogInDone && loginResponse.user != null) {
       _parseAndUpdateUser(loginResponse.user!);
+      // il token qui non è ancora salvato: lo passiamo
+      aggiornaConto(token: loginResponse.access_token);
     }
 
     return loginResponse;

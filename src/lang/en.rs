@@ -155,6 +155,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("empty_favorite_tip", "No favorite peers yet?\nLet's find someone to connect with and add it to your favorites!"),
         ("account-required-tip", "You need an account to connect to your computers"),
         ("account-free-tip", "It's free: 15 minutes of remote control a day."),
+        ("free-minutes-today", "Free · {} of {} minutes today"),
         ("empty_lan_tip", "Oh no, it looks like we haven't discovered any peers yet."),
         ("empty_address_book_tip", "Oh dear, it appears that there are currently no peers listed in your address book."),
         ("Empty Username", "Empty username"),
