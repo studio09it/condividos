@@ -309,8 +309,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         onChanged: (String text) {
                           _idController.id = text;
                         },
-                        style: const TextStyle(
-                          fontFamily: 'WorkSans',
+                        style: MyTheme.mono.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 30,
                           color: MyTheme.idColor,
@@ -325,6 +324,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
                             color: MyTheme.darkGray,
                           ),
                           labelStyle: const TextStyle(
+                            fontFamily: 'Inter', // non il mono dell'ID
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                             letterSpacing: 0.2,

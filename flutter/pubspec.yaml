@@ -177,6 +177,20 @@ flutter:
     - family: More
       fonts:
         - asset: assets/more.ttf
+    # Font del sito (site/fonts), istanze statiche dei variabili: Flutter non sceglie il peso da solo
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter-400.ttf
+        - asset: assets/fonts/inter-500.ttf
+          weight: 500
+        - asset: assets/fonts/inter-600.ttf
+          weight: 600
+        - asset: assets/fonts/inter-700.ttf
+          weight: 700
+    - family: Bricolage
+      fonts:
+        - asset: assets/fonts/bricolage-700.ttf
+          weight: 700
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

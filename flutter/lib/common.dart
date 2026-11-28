@@ -383,9 +383,18 @@ class MyTheme {
     }),
   );
 
-  static ThemeData lightTheme = ThemeData(
+  // Testo in Inter e titoli in Bricolage, come il sito; gli ID restano in [mono].
+  // fontFamily di ThemeData vale per tutti gli stili: i titoli si cambiano dopo.
+  static ThemeData _font(ThemeData t) => t.copyWith(
+      textTheme: _titoli(t.textTheme),
+      primaryTextTheme: _titoli(t.primaryTextTheme));
+  static TextTheme _titoli(TextTheme t) =>
+      t.copyWith(titleLarge: t.titleLarge?.copyWith(fontFamily: 'Bricolage'));
+
+  static ThemeData lightTheme = _font(ThemeData(
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
     useMaterial3: false,
+    fontFamily: 'Inter',
     brightness: Brightness.light,
     primaryColor: verdeTesto,
     hoverColor: Color.fromARGB(255, 224, 224, 224),
@@ -486,9 +495,10 @@ class MyTheme {
       ColorThemeExtension.light,
       TabbarTheme.light,
     ],
-  );
-  static ThemeData darkTheme = ThemeData(
+  ));
+  static ThemeData darkTheme = _font(ThemeData(
     useMaterial3: false,
+    fontFamily: 'Inter',
     brightness: Brightness.dark,
     primaryColor: verde,
     hoverColor: Color(0xFF1C1F29),
@@ -599,7 +609,7 @@ class MyTheme {
       ColorThemeExtension.dark,
       TabbarTheme.dark,
     ],
-  );
+  ));
 
   static ThemeMode getThemeModePreference() {
     final v = bind.mainGetLocalOption(key: kCommConfKeyTheme);
