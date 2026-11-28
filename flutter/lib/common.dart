@@ -245,6 +245,17 @@ class ColorThemeExtension extends ThemeExtension<ColorThemeExtension> {
   }
 }
 
+// Testo in Inter e titoli in Bricolage, come il sito; gli ID restano in [mono].
+// fontFamily di ThemeData vale per tutti gli stili: i titoli si cambiano dopo.
+// Si applica in coda (`.conFont()`): le dichiarazioni di lightTheme e darkTheme devono restare
+// come in RustDesk, sono gli agganci di .github/patches/apply_flutter_3.44_source_patches.sh.
+extension _FontSito on ThemeData {
+  ThemeData conFont() => copyWith(
+      textTheme: _titoli(textTheme), primaryTextTheme: _titoli(primaryTextTheme));
+  static TextTheme _titoli(TextTheme t) =>
+      t.copyWith(titleLarge: t.titleLarge?.copyWith(fontFamily: 'Bricolage'));
+}
+
 class MyTheme {
   MyTheme._();
 
@@ -383,15 +394,7 @@ class MyTheme {
     }),
   );
 
-  // Testo in Inter e titoli in Bricolage, come il sito; gli ID restano in [mono].
-  // fontFamily di ThemeData vale per tutti gli stili: i titoli si cambiano dopo.
-  static ThemeData _font(ThemeData t) => t.copyWith(
-      textTheme: _titoli(t.textTheme),
-      primaryTextTheme: _titoli(t.primaryTextTheme));
-  static TextTheme _titoli(TextTheme t) =>
-      t.copyWith(titleLarge: t.titleLarge?.copyWith(fontFamily: 'Bricolage'));
-
-  static ThemeData lightTheme = _font(ThemeData(
+  static ThemeData lightTheme = ThemeData(
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
     useMaterial3: false,
     fontFamily: 'Inter',
@@ -495,8 +498,8 @@ class MyTheme {
       ColorThemeExtension.light,
       TabbarTheme.light,
     ],
-  ));
-  static ThemeData darkTheme = _font(ThemeData(
+  ).conFont();
+  static ThemeData darkTheme = ThemeData(
     useMaterial3: false,
     fontFamily: 'Inter',
     brightness: Brightness.dark,
@@ -609,7 +612,7 @@ class MyTheme {
       ColorThemeExtension.dark,
       TabbarTheme.dark,
     ],
-  ));
+  ).conFont();
 
   static ThemeMode getThemeModePreference() {
     final v = bind.mainGetLocalOption(key: kCommConfKeyTheme);
