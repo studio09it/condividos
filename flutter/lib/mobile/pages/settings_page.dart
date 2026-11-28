@@ -754,6 +754,15 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   }
                 },
               ),
+              // App Store 5.1.1(v): dalla home si arriva alla registrazione,
+              // quindi dall'app si deve poter chiedere anche la cancellazione
+              SettingsTile(
+                title: Text(translate('Delete account')),
+                leading: Icon(Icons.person_remove_outlined),
+                onPressed: (context) => launchUrlString(
+                    'https://condividos.com/area.html#elimina',
+                    mode: LaunchMode.externalApplication),
+              ),
             ],
           ),
         SettingsSection(title: Text(translate("Settings")), tiles: [

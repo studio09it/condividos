@@ -13,6 +13,7 @@ import 'package:flutter_hbb/models/peer_model.dart';
 import '../../common.dart';
 import '../../common/widgets/peer_tab_page.dart';
 import '../../common/widgets/autocomplete.dart';
+import '../../common/widgets/login.dart';
 import '../../consts.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
@@ -86,6 +87,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
             delegate: SliverChildListDelegate([
           if (!bind.isCustomClient() && !isIOS)
             Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
+          if (!bind.isDisableAccount()) _buildAccountCard(),
           _buildRemoteIDTextField(),
         ])),
         SliverFillRemaining(
@@ -143,6 +145,76 @@ class _ConnectionPageState extends State<ConnectionPage> {
                 child: Text(translate('Download new version'),
                     style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold))));
+  }
+
+  /// Senza accesso il server rifiuta chi controlla (MUST_LOGIN): lo diciamo
+  /// subito. Dopo l'accesso resta la riga dell'account.
+  Widget _buildAccountCard() {
+    final theme = Theme.of(context);
+    return Obx(() {
+      final user = gFFI.userModel;
+      if (user.isLogin) {
+        return Container(
+          margin: const EdgeInsets.fromLTRB(2, 8, 2, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: theme.dividerColor),
+          ),
+          child: Row(children: [
+            buildAvatarWidget(
+                  avatar:
+                      bind.mainResolveAvatarUrl(avatar: user.avatar.value),
+                  size: 30,
+                ) ??
+                const Icon(Icons.account_circle, size: 30),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(user.accountLabelWithHandle,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600)),
+            ),
+          ]),
+        );
+      }
+      return Container(
+        margin: const EdgeInsets.fromLTRB(2, 8, 2, 0),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0x2100D34C), Color(0x0D008E58)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0x4000D34C)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(translate('account-required-tip'),
+                style: const TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w700, height: 1.25)),
+            const SizedBox(height: 4),
+            Text(translate('account-free-tip'),
+                style: theme.textTheme.bodySmall),
+            const SizedBox(height: 12),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              ElevatedButton(
+                  onPressed: loginDialog, child: Text(translate('Login'))),
+              OutlinedButton(
+                onPressed: () => launchUrl(
+                    Uri.parse('https://condividos.com/area.html#registrati'),
+                    mode: LaunchMode.externalApplication),
+                child: Text(translate('Create an account')),
+              ),
+            ]),
+          ],
+        ),
+      );
+    });
   }
 
   /// UI for the remote ID TextField.
