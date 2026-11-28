@@ -81,21 +81,28 @@ class _ConnectionPageState extends State<ConnectionPage> {
   @override
   Widget build(BuildContext context) {
     Provider.of<FfiModel>(context);
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-            delegate: SliverChildListDelegate([
-          if (!bind.isCustomClient() && !isIOS)
-            Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
-          if (!bind.isDisableAccount()) _buildAccountCard(),
-          _buildRemoteIDTextField(),
-        ])),
-        SliverFillRemaining(
-          hasScrollBody: true,
-          child: PeerTabPage(),
-        )
-      ],
-    ).marginOnly(top: 2, left: 10, right: 10);
+    // iPad: una colonna centrata come le Impostazioni, non il telefono stirato
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: kMobilePageConstraints,
+        child: CustomScrollView(
+          slivers: [
+            SliverList(
+                delegate: SliverChildListDelegate([
+              if (!bind.isCustomClient() && !isIOS)
+                Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
+              if (!bind.isDisableAccount()) _buildAccountCard(),
+              _buildRemoteIDTextField(),
+            ])),
+            SliverFillRemaining(
+              hasScrollBody: true,
+              child: PeerTabPage(),
+            )
+          ],
+        ).marginOnly(top: 2, left: 10, right: 10),
+      ),
+    );
   }
 
   /// Callback for the connect button.
@@ -426,9 +433,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
             .marginOnly(bottom: 10, top: 15, left: 12),
       w
     ]);
-    return Align(
-        alignment: Alignment.topCenter,
-        child: Container(constraints: kMobilePageConstraints, child: child));
+    return child;
   }
 
   @override

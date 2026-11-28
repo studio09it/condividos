@@ -383,7 +383,7 @@ const kInvalidValueStr = 'InvalidValueStr';
 const kCommConfKeyTheme = 'theme';
 const kCommConfKeyLang = 'lang';
 
-const kMobilePageConstraints = BoxConstraints(maxWidth: 600);
+const kMobilePageConstraints = BoxConstraints(maxWidth: 720);
 
 /// [kMouseControlDistance] indicates the distance that self-side move to get control of mouse.
 const kMouseControlDistance = 12;

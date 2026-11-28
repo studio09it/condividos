@@ -130,6 +130,17 @@ class _PeerCardState extends State<_PeerCard>
     );
   }
 
+  // Avorio su scuro, quasi nero su chiaro: niente più colori casuali dal nome
+  Color _coverText(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? MyTheme.avorio
+          : Colors.black87;
+
+  Widget _platformIcon(String platform, double size) => ColorFiltered(
+        colorFilter: ColorFilter.mode(_coverText(context), BlendMode.srcIn),
+        child: getPlatformImage(platform, size: size),
+      );
+
   bool _showNote(Peer peer) {
     return peerTabShowNote(widget.tab) && peer.note.isNotEmpty;
   }
@@ -148,7 +159,7 @@ class _PeerCardState extends State<_PeerCard>
       children: [
         Container(
             decoration: BoxDecoration(
-              color: str2color('${peer.id}${peer.platform}', 0x7f),
+              color: Theme.of(context).cardColor,
               borderRadius: isPortrait
                   ? BorderRadius.circular(_tileRadius)
                   : BorderRadius.only(
@@ -161,7 +172,7 @@ class _PeerCardState extends State<_PeerCard>
             height: isPortrait ? 50 : null,
             child: Stack(
               children: [
-                getPlatformImage(peer.platform, size: isPortrait ? 38 : 30)
+                _platformIcon(peer.platform, isPortrait ? 38 : 30)
                     .paddingAll(6),
                 if (_shouldBuildPasswordIcon(peer))
                   Positioned(
@@ -306,7 +317,7 @@ class _PeerCardState extends State<_PeerCard>
               children: [
                 Expanded(
                   child: Container(
-                    color: str2color('${peer.id}${peer.platform}', 0x7f),
+                    color: Theme.of(context).cardColor,
                     child: Row(
                       children: [
                         Expanded(
@@ -315,8 +326,8 @@ class _PeerCardState extends State<_PeerCard>
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(6),
-                                child:
-                                    getPlatformImage(peer.platform, size: 60),
+                                // più piccola: sotto ci sta anche l'utente
+                                child: _platformIcon(peer.platform, 48),
                               ),
                               Row(
                                 children: [
@@ -325,10 +336,13 @@ class _PeerCardState extends State<_PeerCard>
                                       message: name,
                                       waitDuration: const Duration(seconds: 1),
                                       child: Text(
-                                        name,
-                                        style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 12),
+                                        peer.hostname.isEmpty
+                                            ? name
+                                            : peer.hostname,
+                                        style: TextStyle(
+                                            color: _coverText(context),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600),
                                         textAlign: TextAlign.center,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -336,6 +350,18 @@ class _PeerCardState extends State<_PeerCard>
                                   ),
                                 ],
                               ),
+                              if (hideUsernameOnCard != true &&
+                                  peer.username.isNotEmpty &&
+                                  peer.hostname.isNotEmpty)
+                                Text(
+                                  peer.username,
+                                  style: TextStyle(
+                                      color:
+                                          _coverText(context).withAlpha(153),
+                                      fontSize: 11),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               if (_showNote(peer))
                                 Row(
                                   children: [
@@ -345,8 +371,9 @@ class _PeerCardState extends State<_PeerCard>
                                       waitDuration: const Duration(seconds: 1),
                                       child: Text(
                                         peer.note,
-                                        style: const TextStyle(
-                                            color: Colors.white38,
+                                        style: TextStyle(
+                                            color: _coverText(context)
+                                                .withAlpha(102),
                                             fontSize: 10),
                                         textAlign: TextAlign.center,
                                         overflow: TextOverflow.ellipsis,
