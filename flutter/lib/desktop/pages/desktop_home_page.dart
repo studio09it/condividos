@@ -137,14 +137,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           children: [
             Column(
               children: [
-                SingleChildScrollView(
-                  controller: _leftPaneScrollController,
-                  child: Column(
-                    key: _childKey,
-                    children: children,
+                // Flexible: con le schede in più (piano, permessi) la colonna
+                // può superare la finestra, e così scorre invece di sforare
+                Flexible(
+                  child: SingleChildScrollView(
+                    controller: _leftPaneScrollController,
+                    child: Column(
+                      key: _childKey,
+                      children: children,
+                    ),
                   ),
                 ),
-                Expanded(child: Container())
               ],
             ),
             if (isOutgoingOnly)
@@ -280,19 +283,27 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   // Chi riceve assistenza vede subito se è pronto (prima era in basso a destra)
   Widget _buildCardStatus(BuildContext context) {
     final status = stateGlobal.svcStatus.value;
-    final ready = !svcStopped.value && status == SvcStatus.ready;
-    final color = svcStopped.value || status == SvcStatus.connecting
+    // Mac senza Registrazione schermo o Accessibilità: non è davvero pronto
+    final permessi = isMacOS &&
+        !svcStopped.value &&
+        !bind.isOutgoingOnly() &&
+        (!bind.mainIsCanScreenRecording(prompt: false) ||
+            !bind.mainIsProcessTrusted(prompt: false));
+    final ready = !svcStopped.value && status == SvcStatus.ready && !permessi;
+    final color = svcStopped.value || permessi || status == SvcStatus.connecting
         ? kColorWarn
         : ready
             ? MyTheme.verde
             : const Color.fromARGB(255, 224, 79, 95);
     final text = svcStopped.value
         ? translate("Service is not running")
-        : status == SvcStatus.connecting
-            ? translate("connecting_status")
-            : status == SvcStatus.notReady
-                ? translate("not_ready_status")
-                : translate('Ready to receive support');
+        : permessi
+            ? translate('mac-permission-status-tip')
+            : status == SvcStatus.connecting
+                ? translate("connecting_status")
+                : status == SvcStatus.notReady
+                    ? translate("not_ready_status")
+                    : translate('Ready to receive support');
     return Row(children: [
       Container(
         width: 8,
@@ -304,8 +315,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         ),
       ).marginOnly(right: 8),
       Flexible(
-          child: Text(text,
-              style: TextStyle(fontSize: 12.5, color: ready ? color : null))),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(text,
+            style: TextStyle(fontSize: 12.5, color: ready ? color : null)),
+        if (permessi)
+          InkWell(
+            onTap: _apriPermessiMac,
+            child: Text(translate('Open System Setting'),
+                style: const TextStyle(
+                    fontSize: 12.5, decoration: TextDecoration.underline)),
+          ).marginOnly(top: 2),
+      ])),
       if (svcStopped.value)
         InkWell(
           onTap: () => start_service(true),
@@ -654,21 +674,13 @@ class _DesktopHomePageState extends State<DesktopHomePage>
             "Click to upgrade", () async => bind.mainUpdateMe());
       }
       if (!(isOutgoingOnly || bind.mainIsCanScreenRecording(prompt: false))) {
-        return buildInstallCard("Permissions", "config_screen", "Configure",
-            () async {
-          bind.mainIsCanScreenRecording(prompt: true);
-          // macOS shows the request prompt only once per app, so later
-          // presses would do nothing without opening the settings pane.
-          launchUrl(Uri.parse(
-              'x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'));
-          watchIsCanScreenRecording = true;
-        }, help: 'Help', link: translate("doc_mac_permission"));
+        return buildInstallCard(
+            "Permissions", "config_screen", "Configure", _apriPermessiMac,
+            help: 'Help', link: translate("doc_mac_permission"));
       } else if (!isOutgoingOnly && !bind.mainIsProcessTrusted(prompt: false)) {
-        return buildInstallCard("Permissions", "config_acc", "Configure",
-            () async {
-          bind.mainIsProcessTrusted(prompt: true);
-          watchIsProcessTrust = true;
-        }, help: 'Help', link: translate("doc_mac_permission"));
+        return buildInstallCard(
+            "Permissions", "config_acc", "Configure", _apriPermessiMac,
+            help: 'Help', link: translate("doc_mac_permission"));
       } else if (!restartForPermissions &&
           !bind.mainIsCanInputMonitoring(prompt: false)) {
         return buildInstallCard("Permissions", "config_input", "Configure",
@@ -760,6 +772,22 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ).marginAll(14);
     }
     return Container();
+  }
+
+  // Chiede il primo permesso che manca per ricevere assistenza e apre la sua
+  // voce nelle Impostazioni: macOS mostra la richiesta una volta sola per app,
+  // poi senza il pannello i clic non farebbero niente.
+  void _apriPermessiMac() {
+    final schermo = !bind.mainIsCanScreenRecording(prompt: false);
+    if (schermo) {
+      bind.mainIsCanScreenRecording(prompt: true);
+      watchIsCanScreenRecording = true;
+    } else {
+      bind.mainIsProcessTrusted(prompt: true);
+      watchIsProcessTrust = true;
+    }
+    launchUrl(Uri.parse(
+        'x-apple.systempreferences:com.apple.preference.security?Privacy_${schermo ? 'ScreenCapture' : 'Accessibility'}'));
   }
 
   // Riavvia la finestra e il --server, che è il processo che controlla il Mac:

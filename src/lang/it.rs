@@ -473,6 +473,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Upgrade to Pro", "Passa a Pro"),
         ("{} free minutes left today", "Restano {} minuti gratuiti oggi"),
         ("Less than a minute of free time left today", "Oggi resta meno di un minuto gratuito"),
+        ("mac-permission-status-tip", "Per ricevere assistenza consenti l'accesso"),
         ("Create an account", "Crea un account"),
         ("Delete account", "Elimina account"),
         ("Empty Username", "Nome utente vuoto"),
