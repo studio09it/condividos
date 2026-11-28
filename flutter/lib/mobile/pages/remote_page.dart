@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -500,6 +501,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
         return false;
       },
       child: Scaffold(
+          extendBody: true,
           // workaround for https://github.com/rustdesk/rustdesk/issues/3131
           floatingActionButtonLocation: keyboardIsVisible
               ? FABLocation(FloatingActionButtonLocation.endFloat, 0, -35)
@@ -554,6 +556,8 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
                     child: isWebDesktop
                         ? getBodyForDesktopWithListener()
                         : SafeArea(
+                            // sotto c'è la pillola, che ha già il suo SafeArea
+                            bottom: false,
                             child:
                                 OrientationBuilder(builder: (ctx, orientation) {
                               if (_currentOrientation != orientation) {
@@ -602,7 +606,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
     );
   }
 
-  // CondividOS: numeri degli schermi direttamente nella barra, stesse regole di showOptions
+  // CondividOS: numeri degli schermi dentro la pillola, stesse regole di showOptions
   List<Widget> _displayButtons() {
     final pi = gFFI.ffiModel.pi;
     final privacyMode = PrivacyModeState.find(widget.id).value;
@@ -616,128 +620,110 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
       final cur = i == pi.currentDisplay;
       return InkWell(
         onTap: cur ? null : () => openMonitorInTheSameTab(i, gFFI, pi),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 9),
-          child: Container(
-            width: 30,
-            height: 30,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: cur ? Colors.white : null,
-              border: Border.all(color: Colors.white),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text('${i + 1}',
-                style: TextStyle(
-                    color: cur ? MyTheme.accent : Colors.white,
-                    fontWeight: FontWeight.bold)),
-          ),
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 34,
+          height: 34,
+          alignment: Alignment.center,
+          decoration: cur
+              ? const BoxDecoration(
+                  color: Color(0x2900D34C), shape: BoxShape.circle)
+              : null,
+          child: Text('${i + 1}',
+              style: MyTheme.mono.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: cur ? MyTheme.verde : const Color(0x8CF3F0EA))),
         ),
       );
     });
   }
 
+  // CondividOS: pillola scura che galleggia sul desktop remoto (Scaffold con
+  // extendBody); "Chiudi" in fondo, separato e in rosso tenue
   Widget getBottomAppBar() {
     final ffiModel = Provider.of<FfiModel>(context);
-    return BottomAppBar(
-      elevation: 10,
-      color: MyTheme.accent,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          // CondividOS: rimpicciolisce i pulsanti se con gli schermi non ci stanno
-          Flexible(
-              child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-              children: <Widget>[
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        clientClose(sessionId, gFFI);
-                      },
-                    ),
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.tv),
-                      onPressed: () {
-                        setState(() => _showEdit = false);
-                        showOptions(context, widget.id, gFFI.dialogManager);
-                      },
-                    )
-                  ] +
-                  _displayButtons() +
-                  (isWebDesktop || ffiModel.viewOnly || !ffiModel.keyboard
-                      ? []
-                      : gFFI.ffiModel.isPeerAndroid
-                          ? [
-                              IconButton(
-                                  color: Colors.white,
-                                  icon: Icon(Icons.keyboard),
-                                  onPressed: openKeyboard),
-                              IconButton(
-                                color: Colors.white,
-                                icon: const Icon(Icons.build),
-                                onPressed: () => gFFI.dialogManager
-                                    .toggleMobileActionsOverlay(ffi: gFFI),
-                              )
-                            ]
-                          : [
-                              IconButton(
-                                  color: Colors.white,
-                                  icon: Icon(Icons.keyboard),
-                                  onPressed: openKeyboard),
-                              IconButton(
-                                color: Colors.white,
-                                icon: Icon(gFFI.ffiModel.touchMode
-                                    ? Icons.touch_app
-                                    : Icons.mouse),
-                                onPressed: () => setState(
-                                    () => _showGestureHelp = !_showGestureHelp),
-                              ),
-                            ]) +
-                  (isWeb
-                      ? []
-                      : <Widget>[
-                          futureBuilder(
-                              future: gFFI.invokeMethod(
-                                  "get_value", "KEY_IS_SUPPORT_VOICE_CALL"),
-                              hasData: (isSupportVoiceCall) => IconButton(
-                                    color: Colors.white,
-                                    icon: isAndroid && isSupportVoiceCall
-                                        ? SvgPicture.asset('assets/chat.svg',
-                                            colorFilter: ColorFilter.mode(
-                                                Colors.white, BlendMode.srcIn))
-                                        : Icon(Icons.message),
-                                    onPressed: () =>
-                                        isAndroid && isSupportVoiceCall
-                                            ? showChatOptions(widget.id)
-                                            : onPressedTextChat(widget.id),
-                                  ))
-                        ]) +
-                  [
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.more_vert),
-                      onPressed: () {
-                        setState(() => _showEdit = false);
-                        showActions(widget.id);
-                      },
-                    ),
-                  ]))),
-          Obx(() => IconButton(
-                color: Colors.white,
-                icon: Icon(Icons.expand_more),
-                onPressed: gFFI.ffiModel.waitForFirstImage.isTrue
-                    ? null
-                    : () {
-                        setState(() => _showBar = !_showBar);
-                      },
-              )),
-        ],
+    Widget btn(Widget icon, VoidCallback? onPressed,
+            {String? tooltip, Color color = MyTheme.avorio}) =>
+        IconButton(
+          color: color,
+          icon: icon,
+          iconSize: 22,
+          tooltip: tooltip,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+          onPressed: onPressed,
+        );
+    final buttons = <Widget>[
+      btn(const Icon(Icons.tv), () {
+        setState(() => _showEdit = false);
+        showOptions(context, widget.id, gFFI.dialogManager);
+      }),
+      ..._displayButtons(),
+      if (!(isWebDesktop || ffiModel.viewOnly || !ffiModel.keyboard)) ...[
+        btn(const Icon(Icons.keyboard), openKeyboard),
+        gFFI.ffiModel.isPeerAndroid
+            ? btn(const Icon(Icons.build),
+                () => gFFI.dialogManager.toggleMobileActionsOverlay(ffi: gFFI))
+            : btn(
+                Icon(gFFI.ffiModel.touchMode ? Icons.touch_app : Icons.mouse),
+                () => setState(() => _showGestureHelp = !_showGestureHelp)),
+      ],
+      if (!isWeb)
+        futureBuilder(
+            future: gFFI.invokeMethod("get_value", "KEY_IS_SUPPORT_VOICE_CALL"),
+            hasData: (isSupportVoiceCall) => btn(
+                isAndroid && isSupportVoiceCall
+                    ? SvgPicture.asset('assets/chat.svg',
+                        colorFilter: const ColorFilter.mode(
+                            MyTheme.avorio, BlendMode.srcIn))
+                    : const Icon(Icons.message),
+                () => isAndroid && isSupportVoiceCall
+                    ? showChatOptions(widget.id)
+                    : onPressedTextChat(widget.id))),
+      btn(const Icon(Icons.more_vert), () {
+        setState(() => _showEdit = false);
+        showActions(widget.id);
+      }),
+      Obx(() => btn(
+          const Icon(Icons.expand_more),
+          gFFI.ffiModel.waitForFirstImage.isTrue
+              ? null
+              : () => setState(() => _showBar = !_showBar))),
+    ];
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        // se con molti schermi non ci sta, la pillola si rimpicciolisce
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xE0101218), // pannello all'88%
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: const Color(0x1FFFFFFF)),
+                ),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  ...buttons,
+                  Container(
+                      width: 1,
+                      height: 22,
+                      color: const Color(0x24FFFFFF),
+                      margin: const EdgeInsets.symmetric(horizontal: 4)),
+                  btn(const Icon(Icons.close),
+                      () => clientClose(sessionId, gFFI),
+                      tooltip: translate('Close'),
+                      color: const Color(0xFFFF8A7A)),
+                ]),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
