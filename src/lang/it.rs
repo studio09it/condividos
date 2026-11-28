@@ -468,6 +468,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("account-required-tip", "Per collegarti ai tuoi computer serve un account"),
         ("account-free-tip", "È gratis: 15 minuti al giorno di controllo remoto."),
         ("free-minutes-today", "Free · oggi {} di {} minuti"),
+        ("peer-detail-tip", "Scegli un computer a sinistra\nper vedere i dettagli e collegarti."),
         ("Pro plan", "Piano Pro"),
         ("Upgrade to Pro", "Passa a Pro"),
         ("{} free minutes left today", "Restano {} minuti gratuiti oggi"),

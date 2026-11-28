@@ -26,6 +26,11 @@ final peerCardUiType = PeerUiType.grid.obs;
 
 bool? hideUsernameOnCard;
 
+/// iPad largo (home in due colonne): il tocco su un computer lo mostra a destra,
+/// con le azioni, invece di collegarsi subito. Lo imposta la home del telefono.
+bool dueColonne = false;
+final peerInDettaglio = Rx<(Peer, PeerTabIndex)?>(null);
+
 class _PeerCard extends StatefulWidget {
   final Peer peer;
   final PeerTabIndex tab;
@@ -72,7 +77,9 @@ class _PeerCardState extends State<_PeerCard>
           if (peerTabModel.multiSelectionMode) {
             peerTabModel.select(peer);
           } else {
-            if (isMobile) {
+            if (isMobile && dueColonne) {
+              peerInDettaglio.value = (peer, widget.tab);
+            } else if (isMobile) {
               widget.connect(context, peer.id);
             } else {
               peerTabModel.select(peer);
@@ -80,8 +87,23 @@ class _PeerCardState extends State<_PeerCard>
           }
         },
         onLongPress: () => peerTabModel.select(peer),
-        child: child);
+        child: isMobile ? _bordoDettaglio(peer, child) : child);
   }
+
+  // Il computer mostrato a destra ha il bordo verde
+  Widget _bordoDettaglio(Peer peer, Widget child) => Obx(() => Container(
+        foregroundDecoration: dueColonne &&
+                peerInDettaglio.value?.$1.id == peer.id &&
+                peerInDettaglio.value?.$2 == widget.tab
+            ? BoxDecoration(
+                border: Border.all(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: _borderWidth),
+                borderRadius: BorderRadius.circular(
+                    stateGlobal.isPortrait.isTrue ? 12 : _cardRadius))
+            : null,
+        child: child,
+      ));
 
   Widget _buildPortrait() {
     final peer = super.widget.peer;

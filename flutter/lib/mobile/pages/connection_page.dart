@@ -9,8 +9,10 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_hbb/models/peer_model.dart';
+import 'package:flutter_hbb/models/peer_tab_model.dart';
 
 import '../../common.dart';
+import '../../common/widgets/peer_card.dart';
 import '../../common/widgets/peer_tab_page.dart';
 import '../../common/widgets/autocomplete.dart';
 import '../../common/widgets/login.dart';
@@ -82,29 +84,151 @@ class _ConnectionPageState extends State<ConnectionPage> {
   @override
   Widget build(BuildContext context) {
     Provider.of<FfiModel>(context);
-    // iPad: una colonna centrata come le Impostazioni, non il telefono stirato
+    final colonna = CustomScrollView(
+      slivers: [
+        SliverList(
+            delegate: SliverChildListDelegate([
+          if (!bind.isCustomClient() && !isIOS)
+            Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
+          if (!bind.isDisableAccount()) _buildAccountCard(),
+          _buildRemoteIDTextField(),
+        ])),
+        SliverFillRemaining(
+          hasScrollBody: true,
+          child: PeerTabPage(),
+        )
+      ],
+    ).marginOnly(top: 2, left: 10, right: 10);
+    return LayoutBuilder(builder: (context, c) {
+      // iPad largo: computer a sinistra, dettaglio con le azioni a destra.
+      // Più stretto: una colonna centrata come le Impostazioni.
+      dueColonne = c.maxWidth >= 900;
+      if (!dueColonne) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+              constraints: kMobilePageConstraints, child: colonna),
+        );
+      }
+      return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        SizedBox(width: 420, child: colonna),
+        const VerticalDivider(width: 1),
+        Expanded(child: Obx(() => _buildDettaglio(peerInDettaglio.value))),
+      ]);
+    });
+  }
+
+  Widget _buildDettaglio((Peer, PeerTabIndex)? scelto) {
+    final theme = Theme.of(context);
+    if (scelto == null) {
+      return Center(
+        child: Text(translate('peer-detail-tip'),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(fontSize: 15)),
+      );
+    }
+    final (peer, tab) = scelto;
+    final nome = peer.alias.isNotEmpty
+        ? peer.alias
+        : peer.hostname.isNotEmpty
+            ? peer.hostname
+            : formatID(peer.id);
+    final sotto = [
+      peer.username.isNotEmpty && peer.hostname.isNotEmpty
+          ? '${peer.username}@${peer.hostname}'
+          : peer.hostname,
+      peer.platform,
+    ].where((s) => s.isNotEmpty).join(' · ');
+    final testo = theme.textTheme.titleLarge?.color ?? MyTheme.avorio;
     return Align(
-      alignment: Alignment.topCenter,
+      alignment: const Alignment(0, -0.5),
       child: ConstrainedBox(
-        constraints: kMobilePageConstraints,
-        child: CustomScrollView(
-          slivers: [
-            SliverList(
-                delegate: SliverChildListDelegate([
-              if (!bind.isCustomClient() && !isIOS)
-                Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
-              if (!bind.isDisableAccount()) _buildAccountCard(),
-              _buildRemoteIDTextField(),
-            ])),
-            SliverFillRemaining(
-              hasScrollBody: true,
-              child: PeerTabPage(),
-            )
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(16)),
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(testo, BlendMode.srcIn),
+                child: getPlatformImage(peer.platform, size: 40),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(nome,
+                style: theme.textTheme.titleLarge?.copyWith(fontSize: 26)),
+            if (sotto.isNotEmpty)
+              Text(sotto, style: theme.textTheme.bodySmall).marginOnly(top: 4),
+            Row(children: [
+              getOnline(8, peer.online),
+              Text(translate(peer.online ? 'Online' : 'Offline'),
+                  style: theme.textTheme.bodySmall),
+            ]).marginOnly(top: 8),
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(top: 20, bottom: 20),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: theme.dividerColor),
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(translate('ID').toUpperCase(),
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(letterSpacing: 1.4)),
+                    Text(formatID(peer.id),
+                        style: MyTheme.mono
+                            .copyWith(fontSize: 26, fontWeight: FontWeight.w600)),
+                  ]),
+            ),
+            Wrap(spacing: 10, runSpacing: 10, children: [
+              ElevatedButton.icon(
+                onPressed: () => connectInPeerTab(context, peer, tab),
+                icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                label: Text(translate('Connect')),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => connectInPeerTab(context, peer, tab,
+                    isFileTransfer: true),
+                icon: const Icon(Icons.folder_outlined, size: 18),
+                label: Text(translate('Transfer file')),
+              ),
+              _buildPreferito(peer.id),
+            ]),
           ],
-        ).marginOnly(top: 2, left: 10, right: 10),
-      ),
+        ),
+      ).marginSymmetric(horizontal: 32),
     );
   }
+
+  // Stella dei preferiti: si legge ogni volta, la lista può cambiare dalla card
+  Widget _buildPreferito(String id) => FutureBuilder<List<String>>(
+        future: bind.mainGetFav(),
+        builder: (context, snap) {
+          final fav = snap.data?.contains(id) ?? false;
+          return OutlinedButton.icon(
+            onPressed: () async {
+              final favs = (await bind.mainGetFav()).toList();
+              fav ? favs.remove(id) : favs.add(id);
+              await bind.mainStoreFav(favs: favs);
+              await bind.mainLoadFavPeers();
+              setState(() {});
+            },
+            icon: Icon(fav ? Icons.star : Icons.star_outline, size: 18),
+            label: Text(
+                translate(fav ? 'Remove from Favorites' : 'Add to Favorites')),
+          );
+        },
+      );
 
   /// Callback for the connect button.
   /// Connects to the selected peer.
