@@ -1630,6 +1630,39 @@ fn sim_rdev_rawkey_position(code: KeyCode, keydown: bool) {
         EventType::KeyRelease(RdevKey::RawKey(rawkey))
     };
     simulate_(&event_type);
+    #[cfg(target_os = "macos")]
+    wait_modifier_state(code, keydown);
+}
+
+/// A key event takes its modifier flags from `CombinedSessionState` when it is created,
+/// but macOS updates that state a few ms after a modifier is posted. On macOS 27, a letter
+/// created right after Shift down came out lowercase (0/20 at 0 ms, 19/20 at 5 ms), and one
+/// right after Shift up stayed uppercase. `key_sleep()` spaces events on the network thread,
+/// but they run on the main queue and can still arrive back to back.
+/// ponytail: bounded busy wait (avg ~1 ms, cap 30 ms) on the main queue; a per-event flag
+/// override in rdev would avoid the wait if it ever matters. `yield_now`, not `sleep`:
+/// under launchd a short sleep can last 90 ms (see `key_sleep()`).
+#[cfg(target_os = "macos")]
+fn wait_modifier_state(code: KeyCode, down: bool) {
+    const MODIFIERS: [KeyCode; 8] = [
+        rdev::kVK_Shift,
+        rdev::kVK_RightShift,
+        rdev::kVK_Control,
+        rdev::kVK_RightControl,
+        rdev::kVK_Option,
+        rdev::kVK_RightOption,
+        rdev::kVK_Command,
+        rdev::kVK_RightCommand,
+    ];
+    if !MODIFIERS.contains(&code) {
+        return;
+    }
+    let start = Instant::now();
+    while VirtualInput::get_key_state(CGEventSourceStateID::CombinedSessionState, code) != down
+        && start.elapsed() < Duration::from_millis(30)
+    {
+        thread::yield_now();
+    }
 }
 
 #[cfg(target_os = "windows")]
